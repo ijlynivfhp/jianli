@@ -1,0 +1,628 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>温永建｜C#/.NET 后端开发与架构</title>
+<style>
+:root {
+  color-scheme: light;
+  --ink: #172941;
+  --muted: #4a637c;
+  --accent: #075b99;
+  --line: #dbe6f1;
+  --paper: #fff;
+  --gutter: clamp(18px, 4vw, 54px);
+}
+* { box-sizing: border-box; }
+html { scroll-padding-top: 24px; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: #edf3f9;
+  font: 16px/1.72 "Inter", "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+}
+body::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: 470px;
+  background: linear-gradient(180deg, #081124 2%, #142f50 72%, #edf3f9);
+}
+.resume {
+  width: min(1160px, calc(100% - 48px));
+  margin: clamp(24px, 5vw, 62px) auto;
+}
+.header {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(112px, 17vw, 164px);
+  gap: clamp(20px, 4vw, 56px);
+  align-items: center;
+  padding: clamp(32px, 5vw, 62px) var(--gutter);
+  overflow: hidden;
+  border: 1px solid #5287b781;
+  border-radius: 28px;
+  color: #f6faff;
+  background:
+    radial-gradient(ellipse at 96% 7%, #176c87 0%, transparent 52%),
+    radial-gradient(ellipse at 52% 144%, #3b3f8a 0%, transparent 64%),
+    linear-gradient(110deg, #0a142a, #112d4f 83%);
+  box-shadow: 0 20px 55px #07182f55, inset 0 1px #d4faff24;
+}
+.header::before, .header::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+}
+.header::before {
+  inset: 0;
+  background:
+    linear-gradient(90deg, #a0def626 1px, transparent 1px),
+    linear-gradient(#a0def626 1px, transparent 1px);
+  background-size: 30px 30px;
+  mask-image: linear-gradient(108deg, transparent 31%, #000 94%);
+}
+.header::after {
+  width: 370px;
+  height: 370px;
+  top: -78px;
+  right: -86px;
+  border: 1px solid #93fce445;
+  border-radius: 50%;
+  box-shadow: 0 0 0 27px #93eafd16, 0 0 0 60px #93eafd13, 0 0 0 96px #93eafd0b;
+}
+h1, h2, h3 { line-height: 1.36; }
+h1 {
+  margin: 0 0 10px;
+  color: #f6faff;
+  font-size: clamp(2.45rem, 6vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+p { margin: 5px 0 8px; }
+.role {
+  margin: 0 0 17px;
+  color: #95f1ed;
+  font-size: clamp(1rem, 2.15vw, 1.26rem);
+  font-weight: 700;
+}
+.meta, .intent {
+  margin: 5px 0;
+  color: #e2edf9;
+  font-size: .92rem;
+  overflow-wrap: anywhere;
+}
+.intent { margin-top: 12px; }
+.portrait {
+  width: 100%;
+  margin: 0;
+  padding: 5px;
+  border: 1px solid #b0f9f7ae;
+  border-radius: 16px;
+  background: #b7eefe29;
+  box-shadow: 0 0 0 7px #bdfaff14, 0 0 38px #68fce654, 0 10px 30px #05112180;
+}
+.portrait img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 7;
+  border-radius: 11px;
+}
+a { color: var(--accent); text-underline-offset: .2em; overflow-wrap: anywhere; }
+a:hover { color: #007678; }
+a:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.header a { color: #bfe9ff; }
+.header a:hover { color: #fff; }
+.resume-body {
+  display: grid;
+  grid-template-columns: 174px minmax(0, 1fr);
+  gap: clamp(16px, 2.4vw, 28px);
+  align-items: start;
+  margin-top: 24px;
+}
+nav {
+  position: sticky;
+  z-index: 2;
+  top: 16px;
+  display: grid;
+  gap: 4px;
+  padding: 9px;
+  border: 1px solid #3f6287;
+  border-radius: 16px;
+  background: #102640;
+  box-shadow: 0 8px 24px #17355829;
+}
+nav a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  color: #deebfb;
+  font-size: .91rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: background-color .18s ease, color .18s ease;
+}
+nav a::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  flex: none;
+  border-radius: 50%;
+  background: #7baec7;
+}
+nav a:hover,
+.resume:has(#profile:target) nav a[href="#profile"],
+.resume:has(#experience:target) nav a[href="#experience"],
+.resume:has(#projects:target) nav a[href="#projects"],
+.resume:has(#backend:target) nav a[href="#backend"],
+.resume:has(#frontend:target) nav a[href="#frontend"],
+.resume:has(#education:target) nav a[href="#education"] {
+  color: #b4fcf4;
+  background: #214b63;
+}
+section {
+  margin-bottom: 18px;
+  padding: clamp(18px, 3vw, 35px);
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: var(--paper);
+  box-shadow: 0 4px 16px #223b610d;
+  overflow-wrap: anywhere;
+}
+section:target { border-color: #78acca; }
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  margin: 0 0 17px;
+  color: #142f50;
+  font-size: clamp(1.26rem, 3vw, 1.62rem);
+}
+h2::before {
+  content: "";
+  width: 4px;
+  height: 1em;
+  flex: none;
+  border-radius: 8px;
+  background: linear-gradient(180deg, #267bc9, #22a9a7);
+}
+h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 10px;
+  margin: 0 0 8px;
+  font-size: 1.06rem;
+}
+.date {
+  white-space: nowrap;
+  color: #355d79;
+  font-size: .85rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.entry + .entry {
+  margin-top: 17px;
+  padding-top: 17px;
+  border-top: 1px solid var(--line);
+}
+ul { margin: 5px 0 9px; padding-inline-start: 1.3em; }
+li::marker { color: #127aab; }
+li + li { margin-top: 5px; }
+#profile > ul { margin-bottom: 0; }
+#profile li + li { margin-top: 10px; }
+#experience .entry { position: relative; padding-inline-start: 17px; }
+#experience .entry::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 2px;
+  top: .56em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #15868f;
+  box-shadow: 0 0 0 4px #def2f4;
+}
+#experience .entry + .entry::before { top: calc(17px + .56em); }
+#projects .entry h3 { color: #19476f; }
+.project-links { color: var(--muted); font-size: .92rem; }
+@media screen and (max-width: 860px) {
+  html { scroll-padding-top: 114px; }
+  .resume-body { display: block; margin-top: 14px; }
+  nav {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    top: 5px;
+    margin-bottom: 14px;
+    padding: 5px;
+  }
+  nav a { justify-content: center; padding: 4px 2px; }
+  nav a::before { display: none; }
+}
+@media screen and (max-width: 600px) {
+  body { font-size: 15px; }
+  .resume { width: calc(100% - 24px); margin-block: 12px 24px; }
+  .header {
+    grid-template-columns: minmax(0, 1fr) clamp(68px, 19vw, 96px);
+    align-items: start;
+    column-gap: 15px;
+    row-gap: 7px;
+    padding-block: 22px;
+    border-radius: 19px;
+  }
+  .header::after { right: -215px; }
+  .header-copy { display: contents; }
+  h1 { grid-column: 1; grid-row: 1; margin: 0; }
+  .role { grid-column: 1; grid-row: 2; margin: 0; text-wrap: balance; }
+  .meta, .intent { grid-column: 1 / -1; margin: 0; }
+  .role + .meta { margin-top: 6px; }
+  .portrait { grid-column: 2; grid-row: 1 / span 2; }
+  nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  section { margin-bottom: 13px; border-radius: 15px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  nav a { transition: none; }
+}
+@media print {
+  @page { size: A4; margin: 12mm 15mm; }
+  body { color: #000; background: #fff; font-size: 10.5pt; line-height: 1.45; }
+  body::before, .header::before, .header::after,
+  h2::before, #experience .entry::before, nav { display: none; }
+  .resume { width: auto; margin: 0; }
+  .resume-body { display: block; margin: 0; }
+  .header {
+    grid-template-columns: minmax(0, 1fr) 22mm;
+    gap: 6mm;
+    align-items: start;
+    margin-bottom: 10px;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    overflow: visible;
+    color: inherit;
+    background: none;
+    box-shadow: none;
+    break-inside: avoid;
+  }
+  .portrait { padding: 0; border: 0; background: none; box-shadow: none; }
+  .portrait img { border-radius: 0; }
+  h1 { margin-bottom: 6px; font-size: 22pt; }
+  .role { margin-bottom: 4px; font-size: 11pt; }
+  .meta, .intent { margin: 3px 0; font-size: 10pt; }
+  h1, h2, .role, .meta, .intent, .header a,
+  .date, #projects .entry h3, a { color: inherit; }
+  section, section:target {
+    margin: 14px 0 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  h2, h3 { break-after: avoid; }
+  h2 { margin-bottom: 7px; font-size: 14pt; }
+  h3 { font-size: 11pt; }
+  .date { font-size: 9.5pt; }
+  p, li { orphans: 2; widows: 2; }
+  li::marker { color: currentColor; }
+  #profile li + li { margin-top: 4px; }
+  #experience .entry { padding-inline-start: 0; }
+  .entry + .entry { margin-top: 8px; padding-top: 7px; }
+}
+</style>
+</head>
+<body>
+<div class="resume">
+<header class="header">
+<div class="header-copy">
+<h1>温永建</h1>
+<p class="role">C#/.NET 后端开发 · .NET 架构师｜13 年软件研发经验｜杭州求职</p>
+<p class="meta">现居杭州西湖区｜首选杭州，亦考虑上海｜期望月薪 18–25K｜已离职，1 周内可到岗</p>
+<p class="meta contacts">手机 <a href="tel:15225202210">15225202210</a>｜邮箱 <a href="mailto:ijlynivfhp@gmail.com">ijlynivfhp@gmail.com</a> / <a href="mailto:380726211@qq.com">380726211@qq.com</a></p>
+<p class="intent">求职意向｜全职｜主投 C#/.NET 后端、.NET 架构师｜兼顾 WPF 开发、MES 相关岗位、.NET 全栈、Java 后端</p>
+<p class="meta"><strong>GitHub</strong> <a href="https://github.com/ijlynivfhp">https://github.com/ijlynivfhp</a>｜Gitee：<a href="https://gitee.com/yekexing">https://gitee.com/yekexing</a></p>
+</div>
+<figure class="portrait">
+<img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEBLAEsAAD/2wBDAAMCAgMCAgMDAwMEAwMEBQgFBQQEBQoHBwYIDAoMDAsKCwsNDhIQDQ4RDgsLEBYQERMUFRUVDA8XGBYUGBIUFRT/2wBDAQMEBAUEBQkFBQkUDQsNFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBT/wAARCAGdAScDASIAAhEBAxEB/8QAHQAAAQUBAQEBAAAAAAAAAAAAAAMEBQYHAggBCf/EAEMQAAIBAwIEBAMECAQFBAMBAAECAwAEEQUhBhIxQQcTUWEicYEUMpGhCBUjQrHB0fBSYnLhJDNDgvEWJVOSFzTCY//EABwBAAICAwEBAAAAAAAAAAAAAAACAQMEBQcGCP/EADURAAICAQMCBAMHAwQDAAAAAAABAhEDBCExBRIGE0FRImFxMoGRobHR4RQzQlLB8PEjNHL/2gAMAwEAAhEDEQA/ACiiivog4UFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRX3FcSyRwIXkdUQdWY4A+pqG0lbJSbdI6oqCvOPOHrCQpNq1qGGxCPz4+fLmmy+J3C7tyjV4c5AGUcZJ+lYEuoaODqWaKf8A9L9zNWh1UlaxS/BlmoqFg430C5l8uPWLPnyAFaULk+2cZqbK7A9j0I3BrIxajDn/ALU1L6NMoyYMuH+5Br6po+UV9xXysgoCiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigAoxmvoGayrxK8W20a7k0jSZoo7xRiSdzkofYYP41rdf1DB0/F5uZ/RerM/RaHNrsnl4l9X6I0rUdWsdIhMt9eQWkYGS08gQY+tZ9xB+kBw1pGUtWl1CXsUHIn4nf8qwDVWudWuJ59RuJbiYDMjPJzeYM9Qe4NVbUbNASuOdD90k561zzVeKtVl2wRUF+L/b8j3mm8NafHvmbk/wX7/mbBr36Q2r6lLJHYXEGmpjYJHl//s2apt/xPfcRqXvdWnc8w+KSfIz/AN2w+lUJdNmcsQ45ACQd9sU2aJ0A5uhO3y9a8nqNXqdS7zZHL6s9Jg0+n0+2LGo/RF7VbrmXlvZmz080834bUTzXVso8y6nXf73LlQfmOlVKGe5tZFIZkI6qdgas2j6jJNGUEXMHPK3Mc5GOnv8AWsSrRmWx/a6tcJIpmKTxqMcrJ1H41btB41ubE81rcXFupOeWOZjue2DVZbT2vE54owHA5jgdR7V9t7J4wSSQwAbY4yPl8x9KmM5QdxdMWUIzVSVmx8M+Ld6FaO8MN5GmCZJmEb49Mgb1ctO8SdJu1U3JexztzuOeMH/UvT6gVhcdtaX+kIcw/bOmOjNjpkHYjtmoEXmp6LAZ7aTzLRzyspJPlNv8Jx0+ff6Vv9L13X6aqn3L2e/8mn1PRdDqFvDtfy2/g9c29xDeQiWCVJoj0eNgwP1Fd4rzDw1xZcWzLNBdSWrtsWVyrDt22YZ7Gta4R8WLe8n+w6w6wTc3LHd8vKjb9G7D57fzr2vT/FGDUzWLUR7JP19P4PG67w7m08XkwS7kvT1/k0SijYgEEEHcEbg0V7ZO90eQarZhRRRUgFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFA3orm4uIrK3e4uHWOGMZZmbA/Gq8mSOKDnN0kPjhLJJQirbIPjjiWHhjQLidsvKV5VRDuAds+1eR9QvdU4jvpJI7bkhMhzIwVTjfqevWrr43cSX66tb3NjqljqllM7RmKOZXdDn9+POwx0JHaqLqct1Fp7pAf2pwDgZIycfSuJdX6jPqOdze0Vskdg6XoY6HAoLdvdsZWV5O0d1bO4aMAjCnI3O+KR8pg6owDkNsT+6f7/AIVNcN8JPDE7zRDDRryL1YZPpVk/9IKlosj5Rw3JjlyQfn2/3rQuajyb5Y5Mr0WmoLCRFBBK8ob3J6D5AfnXzQNPha4Wd1VndSUHTBJxgDv/AH6VabK1tG+12LBsuycmTjGB1+R/nRw/YQQ3Ulu6AzpEXhLHA5lO+PTIzj5UyyKS2KnilZFSaGpaNJeWVZsrlR0Ixv8AnS9npcNpPE8qbkc2EGShDYIA7+uPQ1I2w5VjDfAynIU74JJH9Pwri/nfQtajSZAbfnVxzHGxPr9MfSo7q4J7Gh7Dpn2aYcs3wsedHVCVxtsfbp1r5qIVZhdwxrFOgIdY9hIh7YrZNO4dtlig5LfzYm/aK5GGVhtyH1Vt/wABSGs+GMM/2+SBea0mAnt5ItzEScYIPTDAgj1IrBjqY3uZz0squJg99ac8zOuLeFviJG3KfXA2326d6a2d55TuqsnO/wAMkbbh/n771Z7zRpLe5m067IhaQEW8pGFJUkFcn1x/CqbqejzWskisCuFy3sPUeoPr61mxmnwYkoOPKJ+10BLu3BtwUiXMpw3xRY6uvyPUema+xXM8olFwqSSW7eXKF2DejfIjHyqA4f1u4hkaKVuXY5YnGT2P4HcU8k1Ix6itw2DEFAkVRnKgYyR3NS0VcGzeGvHf6taLS9RuOa1lOLeaV8lPYk9ug/Ota615Di1aGG6jt/N/ZSPiMncKScBs/gD8xW3+GPiF9qkj0HUpCbpVzbzOd3UfuH/MPzFdC8Pda7GtHqXs/sv/AG/Y8N13pKmnqtOt19pf7/uabRRRXTDnoUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQB9UZIrGfGHi+5j1NdPbmWxjUP5IbBO3Vh79vpWzrIkKtLIQsUal2JOMAda8mcYcRya/xRq93KfglldIyzZwgyEx9MV4HxbqvKwwwJ/ae57XwzplkyzytcLYzqeBnvXWBQZpZSVznIHN39T/Sr9omktNrqxXEYEaojsHG2/c/l+NN/Dvhga7xLbMV5IlIdyRnC56H61s9vwqi8UR3dtHmOP4SG6cozj+I/sVyXNqIr4UdV02nb3I234WVJ4wqeWjb5XsPpTmXh0pNcQuvMrqkgHrnI/Lf8a0H9VvdOp5RzDBG2Dmpax4dj1K6SJ8rIFK82O2cmtPLPJm+hp00YTbaBZpq4/WCzRxNKiM6kKeQkgnPbGQfpiovi3RpRFIfKczLGYjIox8SnY/9w3/GvSGr+FVrfkk/ERy5GSOhzUnc+Gmm6jowtWRmUoVDfe5GxgH6VZDVJCz0TktjyjpGnvregtcwAvLAnLIh/eIU5H4d/Wm/Fk8uu6ZYO8Zae3QgvjDyIRzKcf4huD7jI616D4Z8K7vhniOFWtHuNLuTl35Tsyj5bA9R747VO6l4EW96gn0+BopIkMfLIpEbdw3t/Wr1qo2Yr0UnGmVfwQJ474PsXjLRzQqbZpUDN8a9eb2Ox9jge9avpWnHS7w3EqRh1cw3sQjLIwc8vmL7HlGemCDtvUJ4H+HN14c8T3FvLIqW10FuogynAlU+n7uV2Ira9R0WKe9WZyOWcGKUKuVYdtjWtzZEpuuDZYcPbFJ8nn7xV8JrK6uWaWAC2vCCpTYpJ0xnphth8+WvOvHnCeq8M26C/wCaSxIP2a85CeT1Vh+ORXv3UuGU1XTJbOd43SRcElcYb/GPf1rO9c4HuLeCSDUoVvbSaQJMzjKscHJPpnPX3B61GHVuH2iM2jWVbcn563yRpc/CoDAYBHcHfb+NWDSW89Y+VfjYEhj0x0I/HrWu+Jn6PJ09p7nS4mMIAaMDdsHp7nYdfb3rO+HeFriIRvLHIjQXIQBNhkHDoc+2/vmvQx1EMkbTPO5dLPHLtkiG4h0P9W3kM0EbC3lQssZ6DfBGPzqSms5c/btOmlaTkjmiYth1JxzD55rS+OOHbW9037ZEOW2VRIvMO2T3rKrXU00zV7m35RNDFIViUn7ykEfkSDVkJufG1GHPF5b7T1HwbrY4h4ZsL4vzyPGBJ6hxswPvkGpqsq8GtaEt5qVisitCT5sSjfI6cwPyx9R71qtd46Nq3rdFDJLlbP6o4v1bS/0mrnjXHK+jCiiit2agKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiigdaAKX4ucQDReFXt0K+ddtynJIKoOp+vSvMGp8j6ip51JLLjbrgjfHz/AI1oPj/xC93xpJZxylbeziSJ8jA5vvHfvjNUvgvh+fibii1s1ccwlClm3Awd64X4g1T1OtyT9I7L7v5Ox9D0vk6SEVzLf8TZfDfg97S0+0hCjnc7YxjOx/GtC0izaKWRFUEkghiOpqe0/So4bGNAcco5V7bVL6fp0MKMQoLHuRXPJ5Lts6Th06hFIZW1isJBbc43qZsIERw4UBtwCBXBtWLKEjLZ3GB1qV07Sp5GBYiMdMKMmsJt8s2kYpIeW0B+8xL+xqVt4xGi4Cqf8oxSlppmcDOfyzT99K8vDEHH400XZLGsSlyAd6fx24EZG+D1FNkVopACox61LQXCkhSAtM3YSE7KJExlMMvRm7fWpOW2+0Q489s4yGVO/wDGuo7NJVGBz561N2tjGkCiMBF6YJwairVCNpbkCtlggl8nvgY3pO8tRJGUkAkjI6EVZrq0AODgH1qNmsiwJVh6EVQ00CnuUTUeF7a7ga3dQY1BWNv3lB35c9xms3vOAFsNTuZDaq0N8guMDH7K5j2DAdMMvX5Cttu7F1Pw7ioqeEE/GgO/epg5LgmcYzW55q4r0P8A9sv7QIVeGWMKpG/xFmI+W+K82caWn2HVzN5QgZWAAQei/wBK998W8GQ6i7XNsm5AZgB1IBxXj/xN4blsb+5RoSxDZDD4QMeleh0mS2rPM63D2blb8IOKjYcY2EEjciFjHkdw3b8d69SV4tWGXTtRiuk5g0Tq/Me2DXsrTp/tVhbTf/JGr/iM12Pwjnbhlw+1P8djkPinClPHm97Q4oooroZ4QKKKKACiiigAooooAKKKKACiiigAooooAKKKKACvq/eFfK+qcGgDyV4t3CXfHGuTD4lN0V5vXAx/LH0q0eBVqy8SK/l55Nw/ocb596gfGq3B8StT5gUjEgKoNuqrvj3/AK1o3gTo/lW0t6wwSoCg9q+cuq3CeW+bf6nf+lR7oY2vZfobYhyoYNnFP7F2JGxbPaouycPKqgbd6f3fFulcOgiaYGUDcKOh9CeleQ7HN0j2nfGCtsuNrac6KzAoPQVM2awxsAcDG3WsO1b9IDS9PHKblWY5HIq4qqX/AOlPZ6cSwUEjqrjAP8xVq0OSXCKP67GvU9Xw3EURCkgZOxqTXUbZl5MqR677V5Q0X9Ki11VQslmLdgQOuc59/Xv7itB0PxasNSgYpcAsd1bmAB7Y370stPPHs0ZmPU48vDNfumi834WDHrSQlxucAA1SrXitJ2AaRGDYKsPSl9Q4mSG2bDgnGwBqloyG0vUtEvFlvps6LJKq5G+eue2Kb3fjNo2jSzQz3ALpgkEgcuehOen8a83eIHiNJJKyIrqpHluwyCO+R7g/7VjvE/El1xBdSt5p5HVQWAIJxn+p/E1nYsF7yNbm1Si+1HrrWv0vOFrXmRLmS5IOCyxkAb4Pxf0ptp/6Sel6tHLLa3JcDoGXGDnvXiEaTdXI5FJSIHA36+uKc2fBmus2bNpJwTjlXJ/IDNZ39Ljrg1MtTldtHtWP9IQSgiO4DOoyytEGUDtvVh0jxl0TVQsF/JFZzleYSqcxuPX1FeMtD4d4304K0mnyW6JuDMwXbuCGI2qTg1HULDUA1ytvAM5JS6jGPlhutD0mOSpEx1mSDts9v2l3DeqskDrPC24KHIxWM+OXh+JLP7bChdBzFsDcZqY8NPFThu10lI9V4o023uAu4urqNd/YhtzU9xT4oeHuqaTcWlxxvw8pcfB/7hGfiHToaxFjlinVGfkyY8+Pdo8S8QadGBM6DlCncD5jNenNJZX0qzZNkaFCu+duUV564ne0t9Xu0sry3urJnPJcW7h0OTuFI2PXt616C0PH6k0/AAH2dNh/pFdc8HP/AMuVfJHHvFcax4/qx7RRRXUjnAUUUUAFFFFABRRRQAUUUUAFFFFABRRRQAUUUUAFA60UUAeZ/H2Jj4okMMCW3gYEdxjlz+INbb4f6cdN4YtAVAZ159ts5qhfpEcH3F0lrxJaoGis4eS7YdVVXyh993I/Cqve/pI6tp3D9sml8PW0FtCqwfar24MhZt9wg5dtj6471wHxBpckeoZMdcu1953LoGpxvRY8jfCr8NjYeO+O4uDNNJTmN5KpMYTBKjud+/b8a816xx7qutXUlxcSsWY7JzkhfQDO23rX2XVuNvE8frCeRLexL+WJ/KEcZI6hBjLY+ePepOw8LLPm57u4uLxzg/G5VSfkP61p8eGGBfFybueWWd2uCh3N5c3Ej890VB6lpAv9imptrc5DajEC2xwcj8a2Sy8O9Ig+MWFsMDYtHzn881NQ8F6UU/8A0ogfXy1/pVjzxrYrjpm9zDrBbW2cBb+FyCMkSDt7VpHC+syWsKylmaNyMuMkZ+fTPerHNwXojoyS6daSD1MK5/hVZ1jw3sFjlfSZ5dIuSNvJcmIn/MmcEVjylGZkxhLFujVOHePZWVMvlMfUVZbnia4urZl80bjZlO4ry9wpxHrNlrU+lXEaCWFSGY9QykYx6qQc1qulQ61qluHgmRF74hL71rsuDtZsMOqc16iXFdyfMczSEYHxFvT51Q//AFEl7cta6TaPfzjcufhj6+v/AIpz4k2WsyR2YknhktvO8qbyY2VmZjhCc52BBH1FSVjBb6FbLbQIFRPvEbFm7sayoRUIW9zGyNzm1wN9M4S1vVAPtmpm1Vm/5NkgJ/8Asa1vgzwd4ZaMvrRvdSk2wk19IoHvhCKzWbjSDRouZ0aSQDIT/eopfGPXpmeOxEVnH25T8WPmahrLP7GxjSyafD9vdnoy38JPD+BsjhjTyw3DzKZT9SxNIaj4Q8Hywho9CsAo3AjhCkfIisZ0HxE46OmtqJnN5aRnlfmQHB/DcVp3BPicOIo1hvofszkbumwDehXfb3H5VW4ZsT7rL8ebBmXbFUNbn9HLhfiaOSOwubjQb/B8uRHMsGfRo27fIg1gVponEPC3H0vDESW6621x+ryskSSI5f4QwLqcKQ2c9QPlXtrhrSzJIrgDJOxqs3/gvp3E/wCkEuvTXVxbTaVp9lerBEq8s8glkUczHJAAUbDr61bi1Ha33EZNEp1283+RkGseFyeFw03QNT1GDWotSmHlXFtE0fkzbDChtyNuvf03rWuGFmXh7T1uMecIgGxX39KfgpLvg/TtWgDJd6dqEU3OjEfDzDP5gVqOr8C6JoHC0Oo6lqjWNxOisico5A7DIQDqfnXofDvW8PS9T36pvtmq29Ha5ND4g6Hl6lg8vSLeLuvdUUCiunQo7KeoONq5rv6akk1wzhDTi2nygoooqSAooooAKKKKACiiigAooooAKKKKACiiigAooooAq3irMsPhpxHz2gvY3tCjxMSBgsAWyNxjr9K8i8b8NQ6fYaLqVnHNb2epRDljnkLFJMDOGx0Ocjv1r2jxLri6Dolw7oGFyklsC6hkBaNsBgdsNjFV/VOFoNY4KisjbxP5mmJHEJIw3K3kjlxnpviuOeK9TGPUoxjzGKv82de8LaWUunSlLiUnX3UUqXTF0zTtPsYkEdvbQpFGuMYAA7ep61DcSapFo8QeQ4wNh3Jq16ndHVdG0++RQGnt0dtujcvxD6HNZvrnDF7r85kuJDEu6gD0rwfcr3Z7btqOxWrjxA4g1gzR6XILWCJSWdFy7AfP+VV2DiviGWblfXr6N8k4EpIJ+XpV70/gFtNkEsFyA57PtScvh9ZSSNLPISzksQkhG/WsmOTGuDByYc83djPReLdbg0xLi6uftgDlCJccxG24PzqbstYOrxCaJiQch1J+7Tm20CxVAjQh0UYCknFI6nafq+zeSxtf2mQWWIblc/FgetY0pKT2RmxhKEfiYlo2gJq3GcUccf8Axd0ojdhucL3/AAA/CvXnBnhTbWuilEcu/U59cdfavOPgHpgueNZPLtx9oihGFYHGWJ5mJ7V7d4C4Vjvo3+1X83QAiEcuD/OtZqZPvqzc6LHF4/MaPI/jDwq2jyXRRGPVzy+qMGP5A1mupxRXDyyQHnKNykDYE/36V6k/SE4Bn4flGpQXD3tnDPi6jkHxFG2JH0JrzvofBlxeancxtOqw2xaB4sHnLY+Bj25SuGB9SayME04vuK9RCp7epRLfhy7uLtrmZImYj7pbPz+lcweGt9NcjyJAAx2CoSRnt13q93OgXmlXDq6Hkz96pHTYpUdfiwT6VkrK48GunpIT55F+EfDvWLnShpss32Wy5uaQseUufl/CtZ4S8EtDhhjZ3xMDkMhJY9Opqs8Ow3Msw55WSIdhW2cHWbyRLuSB3I71hZM03s3sZ2DSwgrSJHQuGk0mEIjmQA7Ma40azWTxF4lus7RafY2+3qWmfH4Y/GrbBaDlULuegFQnB8KT2+tauCCup37vE3XMMQEMZ+R5Gb/urFU7sz6or3iTpia/w3qWnEc5eB+Ue+CRVG8SdRvOIrbSpJWzDFEgjTt0AJPzxWnxwm7v5gd1bIyflVBksX1rRtKRUwBJ9mGN87gUTpxou0zrKpIj2znfOffrXyl79PLvZ1/wyMPzpCvqzRf+riv/AEr9D5R1rT1WVr/U/wBQooorMMMKKKKACiiigAooooAKKKKACiiigAooooAKKKKAIzijS/13w5f2YJ5zH5keP8a/EPxwR9aV0RzPoOmSYIJtIiM9dkA/lUhE3JIrehzTbRLZLPTxanb7Ozwr/pDsB+WK5L4203ZkxamK5TT+7dfqzrHgvUuWLLpm/stNffs/0Rn76ebC61HTMMyRTG6hyf8ApS/Ft8n519tvWo6Wywx2wferpxPpM1xPDfWQD3tqdoGPKLiI48yIntnAKk9GVe2ajHtLe+to7q1kLwuSN15WUjYqwO6sDsQdxXMO69zpscdsp76VHKRzMRntmuBw9CmNmY+ud6tZ0SIkHJz86cQ6ZHERsT9am+0t8orNrw8sowFOAMnI611d6db2ITmX4Sdye3vVtubiKyt2bKqqjLMxCqo9STsKzvV9VHF+ow6VZSmOzncLcXw2+D94R565Gfi6emetL32EsSSNH/R+0bnGp8QiMh9Tuj9n5uotoxyJ+JDH61638PI3C85BJVGyCcb9qxHgI2cMUFtaII7a3VY41XoEGwFehfDUR80xkblXkI9+natfNuc22bTHGMMDSKtxhw/HrEtzDeRrPDKpR0PcEb/XevKXEeh3nAPF7xSRvKqIEIUYa5t8kqR6yJk49dx3FeydfuIxMzKc42/Csn8TdI07irSCsyYvI8mGcDdfUfKlx3GQ2XGpRTMuS2stYs45R5d3A6h45BuGB/vp26UgeCrHmDRoUPselQ9rDc6XJI0Mrxtz/E0ZHK5/zKQQT77H3p/DxZqKnyylrMy9S0Tp+Yc/wrKv2MXsvdos+k6JaWpU/EWG4Bq66TrItUSJIstn4cbZP86ydeKNWZ8rBZx56Hy5HA/FxTi1vdQ1F2S6u5jEVw0UAEEZ+fJ8R+RYiqnFt7jxh7GsapxTJqUVxpGnTlbmRfLuruIgiyRh8Rz083GQq9QTzNgDeXttRtra0gs7WLybWGNYo4V6IigBR77DrWfaPIttax28EaQxxg8qRryqB7AbVP6fcOZgc4A6+9Hagki0RqIWDgYB7VD8BaUsenMZVHILmaVeYdApY5/KnM19zBELZGOlLT3iafw1qCRQmGGC2IEpP/MkkPT8CafFhlqM0MMf8ml+LKZZVpsOTM+Ipv8ABGXXEnnTySf4mLfiaToor6xhFQioL0Pk+cnOTk/UKKKKcQKKKKACiiigAooooAKKKKACiiigAooooAKKKKAClnGIncbcwBPzGx/ILSNdkk2koAyVww/HH8/yry/iXSLV9Nye8fiX3c/lZ6fw3q3pOo4/aXwv7+Pzog7q4JYnOTmq1rFrHLdm5iaS1uW2ae1cxs3pzdm/7gaf3NzyTyJvUbcTZwpFfPCfa9j6Gg72K+19rqOUS+8zfAMtpGSfqOWlIn4jugVOo+Sv/wDnbRoR9SDVq0zTY5pQZMYG+PWpi7sre3tWZUAAG3vUua9jIUL9TMr/AElThr24lvGG/mXLl+X5A7D6CrJ4S+HycWXN1qd67wadCfLi5SA0rjqc9gPWoHiPmnLLET13HpXWieIV1w1w8ljEeVoWYLjqN8k1Ltx25K7UZfEb1w1JpvD9y9qkojVSNia0zReMYYA4jlKowxnOM14Ch8c1vdadbsXFoSxCSyL8Db98dPrWk6V4iTyqubkuvUMGx+dVSwZE1aLceqh9lHr2716C4beVQemS1PILLTJLEpKqScxzhq8Z8ZeMc3DWlM1nbvqeoMB5dujcoBPdm7Uy8Nf0gOI9Rumh1mz/AFfKu6hHJVx07mh4JJF61MHLtNR8TOGn0DiiR9P5mtJPjK9lNM9CtYryZVkYRMdjn1q18J+b4jXNzfsQ9tbkQc+dnk6nB9APzNNeJeEJ9Fm+0wREQHqR2qt0jI7UySi4Ssigy7yN3OwH4UnccPCJhyHbpmm2l6iwtwvN065qRF4XG5NV2yKRxZweTKQTkVJQTeWM4x7iokzch2BG/ensE6yqB0p07MabJJLnzMMT0qd40iSTgK0k5ijARtgHZvnVegC8hyMgCq1fapdXYMMtw8kCOSkZOyjJxXrvDPTcuv6hCcHSxtSf48feeM8S9SxaDp84TVvInFfhz9wyooor6JPncKKKKACiiigAooooAKKKKACiiigAooooAKKKKACiiigApK8Mv2VvJUu4ZWKL1YA7ge/9KVr6Dg1i6rTx1eCeCbpSVGVpdRLSZ4Z4K3F2UXVz5WoynHLjtUXNdAuCdhU9xvGYLwzHpKof69D+eapN3OfM5QcGvmzWaV6TPkwS5i2j6O0OqWpwY88f8kmWS21tYtlzzDbcdfrTiTUnuY+QAlidu5qpQu7uFydutWvQIS8yqT7nbrWsa9TdwyXsPNJ4TbUJueVTgbn+tZnxdw+P1jeJEGjKOVHKe1bvDqaWltnHLyjPw1mmp2Et1dStGuQzEn3GasxN9zEzU0Y8eEZZHPMcY36b09sNBvbND5UxER35Ttv8q0KTS44sPcFEJPVjgUXWhm4hD2pSYHYmNt/lWW5N8mEsXrEhOFuGm1Kd5LiXzXJwC1WfTfDGG/vk8yJ5ApzydA35VcPDvhXTrFfM1y+jskP3FZgWY+/pWzaRYcOoqvZ31sxA5eZJF6/XqRWNLKrqjNhhlSbQ58ONGi4d4agswgjPMzFABgZ6D8qmtTaFoWDgGNhgg+nemqK0KBY3DgbkkZyMVE6rqql48OMKNw3Q/wC9YTV7mZ3+hWNY0JLeZ/s33TuvbaotJWjBV8jB6GrOL5JVKld+pOdqj7/SVnHMp5G7bbUqW+5Pe2iIkusIMU4s7kuVBOKY3lq0SFc4I619syI1BY1Yo0yhssQuRFGWY4Cgkn0ArH9B8ZuH9bC+bJJp7uOZfPGVIPTDDP54q4cda6dE4J1+/UgNb2E7qSf3uQhfzIrwXa8S61bW32eWB2hVeUPAgJUfMdq9b0HqGbps55MPrSaa2Z4nxFosPUIwx5b2t2j3xa3kF7EstvNHPG3Ro2BBpavC9j4pahpFusQ+1xMn3XwUJHuetXDh79KHWtNnFrdRNOmDyPcNzMcdiP8AeunafxTjntmxtfNb/scxzeG8kf7M0/rseuKKx7Qf0g4NQSB7nTgI3UFpIpMcvzB/rV7sPErhnUFh5dZtYZJTyrFPKEYn0wa9Fp+r6LVbQyK/nt+pos/S9Zp95wde63/Qs1FAIIBByD3FFbg1QUUUUAFFFFABRRRQAUUUUAFFFFABRX0AnoM1l/iR4+aJwMHtbMpqupjI5Ub9jGf8zDr8h+IrD1WrwaOHmZ5Uv+cGVp9Lm1c+zDG2aXdXMNjbS3NzNHb28S80ksrBVUepJ6V548R/0sRpV9JY8KWEF4q7frC85ipP+WMY29yfpWP8d+JXE/iRKXv7xlsuscKEpAvyQdT7nJ96ok9sLZiM8w9T1rnuu8SZdQ/L0vwR9/V/se60PQMeFd+p+J+3p/J6S8JfFrVPEeTW7PXbs3F7DyXNsSqqFiOVdFAAAAOD/wBxqc1KUxXJPN8688eFWpXel8d6bc2ltLc8rclwkS5Pkt8L59MbHf0r0dqMQLPggkHY+tc41qbyuUnbZ0rQSXkqKVVsPrZQURux3zVi0i5FmGkYjYdx7VW9FcS2wRiC8e2/p2p3dztEnKNs+9axxRuIyO9e428j9mCfLByWbqaper+Ll5EksVqq2sRzmTGXI+Z6UvqWktfMQeblJySPWqzJ4eWUTNIY/McnmPO5YN33yath2x5FbkyLPHC3kpMsonkzuzb4z3qV0zjI2ExaOdYwdjynH4in9naWFnEtvNYReWpGFC7AVM21jodwp5reFcdGaPesn4XwWY1K+SNj8RBDMxYxzZHVAXOfcV9fj27vIlWGC7ZC23lIVAPfbt/Or5w0nB2iiCSaOO4kVSOTk2z7gdatLa3ouoO8MWnW1rA3xA8irn8BVLcIvgzakv8AIyfR/FriDh6VXivLuEKP+TKrEEemDVwtPGW94imCtFJGpwHDLy5PrvvVmj4Y025y9svNg9HXP4VJQeHUVxb5KLFv6ZqrJkxNXW5S4Tu+6yT4a4kfUIQwPKc4IztV2gu0ktQXbes+tNDXRhyIzOoPRv8AapyK+OFGMEdqwdmy1tpDzWEVgHByT1qKVulKXV5+zOd8npUdJqCRozEgAe9WfQpc6Kp41X2mngW40rUrma1h1V1tue3IDgD4z12x8O/zry9xB4Ra3psK32hOvENmFBdYE8u4X1PJn4v+0n5Va/GnjtOJuOUtLaTmtdMBi2bYyk5kP0wF+hq4eH9+IbZSxOCckntW700Xjx0zyutzebkfbwtjzJqF9c6dMbe7hntZB/0p1ZWX/tPSnej6rHzGG6RZbWTfkkUMFb136V7G1rh/SOLbD7Pq2nwajD0IlXJH+lhuD8jXnbxW8BrnhOKXV9AeS/0hPilt33nth3P+dffqO/rWfFp8mqsqNzb2HxGyuJYFLfcjmYxn5KdxQvDMl+r41D9ry80UUikczY2HPnb5kdaqdvcMABzHlzkb/nVo0HW0879vysAAAp75G9TVMlOzevBjxzxHb6VrMxZAOQNIfijI2wa9EQTx3UKSwyLLE4yrqcgivBlwINVulmt3+yX0ZyJm2Vv9WO3v1Faj4V+M2o8L3o0vV08yIEc0YbJIPRlPTGO4617TpHX3pawap3D0ft/B5TqvRY57zafaXt7/AMnqWimmlara61YRXlnKJreUZVh/A+9O66dCcZxUou0znkouDcZKmgooophQooooAKKKKACo7iDiCw4W0mbUtSm8m1i64GWYnoqjuTUdxnx/o3AlmJtTuMSspaO3j3dh6+w9z+def+PuPL7xTMMV5aQ2OjQMZIbMMxkmbpzSdMAdth3xXm+q9aw6CEoQd5PRe31N/wBN6Tl1s4ymqx+/v9DnxC8btY47MthpFu+m6Ou0jGYKWHpIwG+f8A2+dZXJZW8cnnyk3M/UySnKj5L2+tS+pRyWUhVV5oioAVSAiY7KvaoS00PUOJb37NYn4VwZJXOEiHq39OprkufVZtVkeXNK2dOw6fFpoKGGNIjL6/kubiOCBGkd9gqZLMfQD+VWzh/wrnumW616ZrCDYi2jI85v9R6J+Z+VW3h7h3T+DIHNr+2vXA8y8lA8w/6f8I9h9aZ6tqUjhlDkjrsaxZTfoX0fZ9ct9AsvsejWUNjar/8AGPif3ZupPzqb4N4vOuxNa3LYvYhkEnZ09vcd/pVAvLwkEAYFQkurS6dex3FvK0E0bcyupxg/32rGnjeQysWTy3Z6P0uXymOe4wTSt1d8xYsu4+6Qc5/pVD4K8Q7TiGExs6xXsa5kg/8A6X1H8Kthn8wghgV7D1rWzi47M32Kakk0OrdmnOQCAM7mlp7YMn+bHai1zygdB0GDT6KEyA783yFYzuzLVMp15ZyeZ0OPYUxaK5DAKGG/UGrjf2EwZSkRcEb4r5Fo4dcuu59DVscjQdl8FLWzuhLkzMAd8AnerVoCXMoVAWb51K23DD3E+EXnTuBWj8GeHbMRJcRiGPP3WOCw/lUSy+5ZDDK7bHHCGlSLbxNL9477+lXYqIlxXVvpcdioxygAYGPSk7g82cbitfJ9zM5JIhdUty5JVjnOelRvmiEYZvi96kNUuBbRM7nGDVL1PX47cvI5AwOlZKhsYmSdMkNS1IRIWc4+tZj4scZ3mh8E6pqVgOSWFURJG7M7BQR8s5+lPhq95xLeGKNilsN3kx132AqtfpCW62Pg/eIBy5ubcYBzn9pWXjxxUopmuz5H2Skjzfp147XUbElmc5Yk7sT71uXCGoGG2iAO2AMfyrzvp175bKdiR67YrY+Db0TWkTh8nm3AboT2reOqPMvdWjY7LVnEfMjsEzsvYVJWert5oLL97Y5/3qr2DgQjmO+PrTozZJGMevSosqaTMO8bfDYcIaoNX02MfqS/fZFG1tMdzH8juV+o7VmYchdiVz3FeyXttO4g0q40rVrdbqzugFdX6ZG6n2OdwRWR8Vfo4Ec76BfskgOfst4chh7P2+tWKV8iptcmOW2rTQTIwbJHXPcVb7TWLbWbWC2uMRTR7w3IXLwnPT3U+n1FL/8A4Q1LymxqdoL1RhreRGXB9M9vwqv6vwrrXBFwH1GwkigBH/Er8UR9MMMj+FJzshk/c2nwj8TL/gvWJNJ1kMYcjzApypU9HQ9x/wCK9P21zFeW8c8EiywyKGR1OQQa8UW9w1/pltJaxpPd2qEImQDJEfiKrvvjqB88bmt08AOOFv7dtHkkLJgyQcx+76qPbuPrXufDvVJYci0eZ/C+Pk/b7zyHXemxyQeqxL4lz81/BtFFFFdPOeBRRRQAVmPib4wx8NSNo+iRi/1txglSCkHz9W9ug7+lRviv4uT2V43DnDLCXVGBFxcqdrde+/bHc+uw36ZDb2kdmsg8xmlfee4kPK0nsPReu3euf9b8QeU3ptI9/WXt8l8/me26P0RZK1GqW3ovf6/scXXPdXUt9f3JvNSlbL3E7c6qfRc9T79BjAqM1TU/satLkgKcsTv9TUnacPajxheeXpaqIEfke4kGIoz3z6n2FXW18LNH06z5b9TqtwQeZp8iM79kHT65rnDn3O2e92iqS2MMveKJ9WuYLC0CS3FxIsa465Y46fWtkstGtuGtMisrYAqn/Mk7yP8AvMf76U+suHtO069H2OxtrXky4MMQXf54zTTWZTGW3GaVyvZEtle1S4KOR/Oq9dTnfLCpDUbklmJYEYqvXMhdjUInkY30+WIwcDvmq7dXBy4A79TUrfOQW9AO9QF5cBFYEbjfNWR2G4Pujan+rtfsLliVWOdC7Dry5+L8q9EPcyabPj/oncNXl6WQuOcdD+Nen7F11HRrKTY+ZbxtzdeqisDU+jNjom3dFm0jU4rxFCMOf51YbRlhUAkCsnDzaFdB4yXTOQB+7VnsOK472FeqN0OTitfVm3jkS5L8biNlBIBzTvTxbGXmfoNsVRP1yXDBpOX5Gu11sGYHzMEbbHrSuNF8cyRrdjcWNg3MOQKT8XKM5qz2vFcDBUjZGUb4OBWDrxHIpOX26bn+NOLPiRomYtIw7AjpiqHhcnuZH9Qjdjr0U0jKZPh7Y6U2u+Ibe2j3bJ6E5rG5eNEjwPMzjuKjbrjSaclIC8hPTm6CmWGiuWfbYufF/G0bv5UecZqjebPrV0QThCd6YwJNM4MmWLHerJo9iQFXAAPU46Ve2oow/im9ya0PThEiBFwB0qg/pOZfwwlgXYm8gYnHYE/1rVLBFt4diNjVP8RrSHWtLNpPGskUh3VuhFURnU1JlmTH3Y3BHh0BoX64IO9X7gPiPyHSB+megP8AfpTfjjgG44bIvEDPYSNyK5H/AC2/wn59jVW02UwahCASFaRVb8a9BCSmrTPKThLG+2R6g0nUPPi8zm2IHXOPwqWN47YztjoBtVM4enEUCpk5JyQDmrGFMobkbA6A+lPRUnZKQXnlzeYSTv3p7xBLNJa217aueZPhkVQc+zf1+lVslg2zEFScFtz8/nUxoGo5P2dseWxyQRuB3AGcVHAsiM/XEt2UW9tIrxVBAMiDIHqTU7bajZatYS2TWcPkSJ5csPLlXX0OaWutHgMrJgZ6ggYDe9RX6u8iQEEjkbIOO/z+lLQGMX2iTcE8dJpBLjT5mEtnMpYkx5JA92XH5Vc7C4k4Q4riu4C0fmsLtFxgZzh1Htnt6NVg4sjgmk02/MIa4tZ+VHIGwk+FgfxFMuLbUy6Va3g+/bShSc/uuMH8wtZak41JcohpSTi+GeltPvY9SsLe7iOY541kX5EZoqleDOtDU+EI7fOWtGMYz/hO4/nRXc9DqFq9NDMvVfn6nHNZgem1E8T9H/0X2s/8XuOW4a0hNN06U/r3UCI4ET7yKThn9u4B9d+1Xy4nS1glmlbljjUuzHsAMk1gNjHccVaxf8T3cZZrxmjtY/8A44lOB+Qx9D61ofEXUpaHTeXifxz2+i9WbjoehWrz+Zk+zDf6v0RWrLhv9R2jZPnu+Hllfcueu+ewJOBSukcGzcZTl5mNpo8b5eUHMk/+VfQerfhT6az1PU+JF0y4UPps0ZlllXZ1UH7oPbPT61dbyb7JbRxwfs44xyiNRhQvYVyCtjqA8soLTSbKO0tIlhgjXCRIMKBURqkrc5ydqQt9Slmlyzgjrjpmvty/2hwOval4JGccBVJJCSObYVWNak+B87n0q36gwihCgdt6pOsHIGe4NNFWxGyoXgLEnP0qGuH5QexzU7qICg1XLtcCmaoaBEajMeUjOe1VS9l57kjOVFWHU5vJjmf0H51CaRZ/rC9jgOMs3U0J7bjtXsSnD3DLahKsk2ViPxBe59K3vhwiDS7SDosaBVHsKo+k6eLXJ5QM9vSrfpcw8oEnAUVqss+83GDGsS+ZJ39ssysRjO+KrtzaNbSZ5SPkaswk5o1OOtIXMIcj4cjHpWOjLcb3IKO+nQcoY496+S6tPH13NOLm28t2I6elNvKVj8Q2pytpoSOu3Uhwo36ZNK215eTHZnA23z2peGzVyOUY+QqXtbMR9VC+1Q9iFFs4sbWWf4pWzg7CrDYWCsh7GmlrBlsY+H1qdsYRjlAx70vcZMYUObKzUcoHT1qftwEAA2z196YWyciU5E3KNjmseTsyYqh+1z5S9ahLxDqV9Ah3Tm6U4lk2OdxSmkQ/adShK9iD+dVSew632FtW8KYNf0K/sJI1MVzEQMjPx9VP0OK8S63o36i1eOLc+XPytnbJV8fTpX6ScS61DwhwNqesyBWNpbNKik4Dv0QfViK/OniQllzK/NNzc7Nzc2DnJyfnWw6bOUlL2NP1WMYuFcmraFzrDGTj0xVvtVwoweY43ztiqloislvHITyjAJBG3ToD6e9We1uEeLIYHboex+f9mt0maB7C7NtkAZwM7j+VfLR/JcMM4FfGyUK5JyeuK+QIEbIxt6CmdClrhuBqFkABmdQOUgfexUbPcKoKOMH5d6QhumhaMqcYOBg7VIzRw61GzRuEuFG4zscfKikQyscRRveaekUC80pmjIUdT8YyfwqR12xeLhLUTKuAsJxg98jH500SC9TV7W28jLu/UDblwcmn3iFJPY8MrCMf8TKI9+pUDmP58tS2+BY22Hg1xPHo2tfZrmRYbeaJgXY7cw3GfzorNbK6LKM/C3pRXptD1vPoMPkwSauzTazo+HW5fNm2n8j054oXMg4WOnwuY5tUmSyVx1VWyXP/ANVaq1eaTA9ilvbTNYwRxiNPKG/KNvxq08f2qyW2nXTkBba4Lb5x8UbD8f61T57nniZFIAdfhIztVniecpa/tlwkq/Uo8PY4x0XcuW3ZDaJYW9nc3fk3M9y6sqM05GR1O2OnXNSd5Hz27DGcjFUvTinDOuXEWXL3/wC1fm3yw2yD8iNvarjFfL8ORnm9DXkvQ9MV9mW2lAdvLGc5NStncW5Q3PNmMfdz1rjWrAXUPmKqscEY75qkiea1m8qbKKpwM7CooCwahfm5diSSmdh8qr2ot5qnB2+VOjOG77ehpndEFT0NRYNFW1UYVhk5HtVZvG2NWnVVBJON6qt0rFmUDodqsuyEVTiSYiOOMfvNn8KaaDcG2v7d+nK4yfrSnEUoe+SP/AN/n/eKYx5DnOMGhIa6dm62MSyorDOCM704tGaNiP3c1VOAuIfttuLKZx9phXC/517H5jpVzijDb9q004uLaZvsclOKaJS3kDxjfanGx/Go+PK4HpTqJyykmkMqJxeQ+avwiopgVyDU4RkGmFxCM70ESTsaRXjQdBnttUpYXxuASQc5xvTKOAEU+tYQnSoYRu9yatmG2entUzp7gnGSBUFZPuOh+dTVsxCjY++OtUMyI7kv54A2/CuDNyZOabeYQvTeki7E1Uy0el/NJ3HyNWLhdUFypOc+1VFZeU9BVU428YV4btptN01v/dGHK1xsVtvcer+np3ojjllfbESWWOFd8mS36SfilFfxRcKWFyphtWWW9CnZ5R9yP/t6n3I9K8sazK0pbl226DtvUpf6l5rs7Es7ksTnJOd8n3zuaaizadGkYjO+AevTavQYMCwY1FHlNRneoyPIbDpyqYolBxgDGO21TcEhXHK5DDBwR1+uN/lmoLh1jcaRYvzAkwqdjuTj+9qmoI8j4mzy9Ez269KsoxybuNb+36dYWT28I+y5CzKgLPkk4J+oH0FNolKNhicdBnHr29frSMYIXYnnwdyD/AHFKJ+xHxNuc9wfrud6lbEM+3cxghducEjO5GarE/Gr6JlxuQfXf3xv0qQ1S9OCGKqCpyD7day7V0u+KNct9MsEV2dgoIzhd8ZPsBv9Ktiu5kWb54W6tccWWU+qSEiDmaCIkdcY5jt132+lNfFy58rUbe1OQILcPzE933//AJq68DaXp/Duh2Gn28gFtbRBFYjBbuzHHckkn51V/GjSdP1HTnvrS65r6JFjkiTcFc5VgfXJIx8vSi02SrMWj1JE82Z/uKdlG53NFNdGMMcjSPNE4g/ZiMyAYbG5YHoe2DRTWBr1t4japxpxhFaXcpNusMkggiGEUgdcd/mc9anb2S6gQEKSmcbDtVG8JtLluuMru9EeLa1syjyf53YAL+AJrTLx8MY8Y+dRlzZM8nPLJtv1YsMcMMVDGqS9iscRWa63pXPGQuoW454HI2z/AIT7Gqrwtx5FqaCKRmjkT4Wi5QHVs7hh+NXS5Kxufh6b56Cs+4j8NJ9RvLzWNOl8u4Px+SNi7DqQf61U+KJNLs7tZhhmyMbHPWoXiezCSpIyjkH73YmqPwbxrKzfY70+TcRNytz7kEds1oMlxBq1mY5WzGwwpUbqfUVFUhkVYSjmwKTuHUqQM/Sm2oWs1hMY2y2Nwx6sPWmsl2VAHUnbehIGxrf/AB7d6qupuYQxBAA3Y+1WO8divMvfbeqnxM3JZYBySQtMiUUi+kM9zI7HLMxOaTi+JxnpTm8tjnmAzTVOgPSmFHlrdSWdwssTlHU5DA4I+tadwpx5Bfxi3vWW3uV2DMcK/vnsfasqzv70orquMLv6+tV5MUci3MjFmlido9DW0wmUMMZNPhsAcCsM0LjbUdFKhZPPgGP2MhyAPY9q0PSfFHSb1VW7ZrGXGP2u6E/6h/PFa+eGUfmbjFqoT52LuoBxiuJogdsUlp+pWmoRiWC4imU9DG4Ofwp9hcEHqKxW6dGdyrI1ouRsAfjTiEcu1dlR1/jX0MuM5qfQKHtqCpBxk9qmbaJyAetQVpcKCM5+gp5PxJp+kxeZd3UNuoH/AFZAtY8k72LE1HkmTAxHfakLqeK0haSWQIiKWLMcAAepPSs41jx302zDrYQTXsykgNnkjPvk7n8KyzirjzV+K5Abu45bcdLaLaMfMdz7msjHpck3uqRiZdbixr4XbL1x14xMUez0OXIbKveKMY9k9fn+FZSLpriUlmLHJbJJOSfWmwTzDgE4B6GpKw08u6u+0Z25vX+tbXHijh2iefz5p55XIc6fpTXrc7uVQDmOB/f41JSJEjEoAyoCT71xLeCKMRQpyoBuCf4bemKbOnLYyFsgP8ORtnbtWRdmPxsaLwFdm54XschywVlycNspI6VaQCMBsKcdmBx+NZ74X3IOiyRFiXglYAbE464/PPSr3CWmlVyzHmznmHw/x2+VDQJ2SSBkC+hG2NqbXtysZOTjG2TsD9e1PIW5YRz8oIGSBnOPrv8A31qu3jXGv6ktjYI0jtuxcYWNf8RPQfzpCCta3dSanOLaxje6uXbCqnX3zV84L4Mt+G7QtcujXkwzM4Yczd+UEmp7hvhWy4ftj5cYe5YftLhgOZvl6CmWp2NxfaizQmGOOFQvK5B5z1O3b61N1wQiQvI2vXCQlom3YAnIx7dunuaz2+gk4y4xjtXZZLCy5xDCR+y8wKR5j75Iz2HpsDT7iPX763RNHskE2p3JUBYckKT05ST336YHeojV5bPhTSo9LLR3F8JMTW9zA0V1Zz4ys0cgPxIR09fcNspYmV/ihLbUNXuZNJ0nSxyOYh58PM0nKSC55iQM4zyjYdqKbPcw2sPnNMiJk5I+8SaKui9gdG/cBaWNG4Ts0WArNOonnPfnPr8lxUtd5dg/fvinH6yhaNfKURxAAJGFwFHpikTPCpLc+561SLTu2RFxEVJDsrZPwkDGKc20QjiAXcBaTkf7Vcv5fL5KqN988x6/SgM0JDDHL60EmbeIHA73Erapp6clyo/bQ9OcDoR7/wAaguGeMJbR1trluUdMP/U9K2nzFmB8yMhD0+VZzxx4emaN7+wQlhu6gAH3qxS9GQTSiDWbQJMC8bDZgNx71Vda4fn0h1IXz7Y7h8HA+fpTPhLiIwMLWfmV1PKA230H860CC8SVFBCuGOMbEGor2Dkzor5qZyKpvGZaOOL4QTznpWyXfC1tdvz20n2ck7oRlT8j2qjeJPCq2ekx3bK3Ojcp5GzkH1HzxU8sZKjLZJEmj5gDzD72aYvjmPUexNO5VML5A37+4pC8Uhg69CKYBLpijmr51yD17V0qjGGoIPquBSiuPiznptj1rhlIRgpHK3fGTQFPKelKnQC0UrwsHjdo3x99CQfxFS9nxrrlgnLDqk6gHPxnn+m/aoJQMEEYPvXWApAJ6Dv3pWk3bQ8Zyjwy0R+JnECyfFdxyDGPjjGfyr4fEfXXZh9uCggjCQqMflVVVkCszHDZ2FfRNufhyPXvS+VD2LPPyf6idn4y1mdW8zUrkg7YDkA++1RN1NLcOTM5lk7ljk0gspfoMnGNqU5WI6ZOOnc08YKPCElklLln0sXYljua+MwDjmGM75rp4SpVn+EY6Hqa6XGQRse/qaYr4FYI+VzkAgjYc394qQw0ZwD90nAB2WmJjcKAQFUnJw2GcH3pZY1thyhsD8e9K1uA5aUkMfvEdKeT4NvBDsGIJP1pjGyu++Pwpe7mWACblZioKqo9cbbfjUICweHKG3vtStUdycRsUHQnJH1xWsWulGwtyZgFlk6BiSVHpn+VU/we0W70q1u9ZuUaFrlVjhjkBDMo3L/UnAq06tqpGQrkmRsAE4yfSnEVcH0rcalKlpbKOZzh5GHwqOpJ/v5Va9D0K30S0WC3z5hB8yeQ/E565J9KY6JYyaVYMwA+2SHndwuQCRsNwc4pHVuLZI2MXkYTHKSGIz77Y/pVb3Y1E5c3cdtCzlhKg3LoQV/EGqHxdxLb6FOLmARyXl2MC1k6oR0fqdsdu+ab6rxjDa2K3ADYlHPFakleftzey/PFR+nWraHGOJ9ZlSLU5lM+nLeRq9nMFG8TsPuOV+6vbINBKjbPvkxcFaffX2u28Nxq0kYnuNK1KIxtPbuQM28oYYcbZA+7jlGDWfWvEsmq3xvLy6muOUCGESnndIwTyKSBvsetQPFvF0vEmockSSWulRO0lrZSvz/Z+fBZVY78uegJOKkeGbNDGZpQMdQM9KmNXZDdOhxrkB1BFlWGRWJwcd6KsfmwlELHAxRT3RDhbuzWdF1bTtVJi0DiySS4PkwpYavGH8+4fdlSQYKIoIy7k5x0p5e622mSRjVrI2MUsrwRalDL51hcSIcN5UwGCM/hXlX9YSW1y00LtHJvyspwR/eauPCvjFrvD0bW7XBkga3+x8+3NHASDIqZGxYemN6UstM9DLr6W8SmJFEfZhghvQgjr866Gv28+ORFMhJxuD26fPrWZ6P4h8K8Qzc1vKvCty8xJhtiTaR26Jj4oXJ5pGIByGHX2OZ6za5CC6BtXBtxds1q4/ZxFsKXR/3j1wpY1DfuRRbbniMQL90KdsKq7fj0rqG9jkUEkKTvyk7neoOewupkeOeG4WZCAxkBXlcjOCD0JG/yqNimn0qRldwyAdAucHPp/Oo5Job8YcDpcs2qaYhWdW5pIk6EdytNtA1bz8RTLyuu2c4/GrMdRM0UUiY5zuSGz+IqM1HQ1kuxd2qhAzZdEXqfWnj7BQ+JaECSPC98daqniJcm4tYrM5wwMrj/ABdgD9cmrUshSIMw5So3zWa67qRvruaY7hzhduijoPw3+tDRNWZrdW2JyOw2z60jHEHjMZ2bsanNUtgSXAxnbaoWWAxnb0zUobt9SOmiMMzA9a4DZp7d27SwlwpLLuaYptnPaobK6FQ22MdqE7HfFJmTlYjrXSvgDIP0pbChQMG6Yx70o2CScYBJbA/l7U3zv1yBXZfm9iPUUWFAQFPQE+hFdgKRsOlfMAuCdx+dfQMDOCfb505B3GxxyxgEKOuOgriR2ByAB8q4EJBHKPi9q+cmwySQRmldjHe++ep6k7ml4I5SCY0OBvk9KSQADbI+dfTKxUKB8PZvSoViNDoSEoC+Gf5YGPU+tKKzjcMcjf500G7Y3GepNOkBQIpHOM5ZRkd6t9BRxCWinTsG2PetD8OeDotYu5dUv41lt7YDyoGBwXO4Y9BtjpvVBsLXzplLf8sHfPXFbz4dgHh0OpyXlYlfTptt7DpVV0W+gvfTNFkuWViCFx8tgPSlOF9JE8smq3ZPkof+HjVcs5G3NjuB6/nUrcaKtw5kuNogMmM7c2R+XzpLUZPLs2VZEiijAYtkKoQe/YYJ2p7vgrFr3WYfIaKKRS+AAGYjPpuRVH4h1qDSpGSRVutWYgwQQLlVJ6c49fbvX271671a5NrobARjDT6kwASFSQATzDljA/xNtvSWqT6L4ZpM1+Wv9eV2t79JH5Z4+YZiuLRwdx0PN16YwAap4e46iN7PQk0SM8Q8SXzwXjymNHjVZDp9yu8f2iE9mxsvQd+orM+KuMbriq8uJCi2sUzCSa3gYmF5hsZVXA5S3X6k96Q4l4v1Li++N5fz+bO0awyOo5DMF+6zgHBbHf2qNCMRkHenSd2M5ETOvLLk9SelW/RDnSARk79M9KrVyuCC6j61ZdATGkHcAhj3p/Upu2PLa9aBuSUg43GaKj9UlKzLgH7u4HrRSMbuK7KFPK3f0pFwSDkjPUYrph8IxuaDg7DY9M9akgRaLyxy7GnVpq9/p/N9nvZYQxUsFfY8pyv4U3K8pBGADsaHTmGdt+1A6LdpXjLxXok8UyaiJxHc/agsqdZOXA3BBGB0xjHarzw948WmrW8NlxDYBGEXlLdqcBpXcc0kjAcwUDfHxdxjGAMTZThSRkDfFfW67DFCpg9j1LdxQRiO90+b7ZpEkjJBOpALBRuwQE/CDn4hscGnun6vbXEREcnNjcbYB7be2fSvOPBvH+rcF3DG1nd7eSPyHjY7rGTl1jJ+4TuMj13BrYoOKrPjfSLiXh1Fs9YYSSpZ+byi1hQY5nck/EcbDoSwA71O6ZPItx1xPFYo1jE/7WVf2g22U9vmazS61SSeQAD4dxj0qOm4fkuJmluLmdp85JJ+LJHUn5V3FaSqQsjc4H7w7imW4cDqRufAG474qJnTlOQuQOlSsMRRtzzLXy4gBJA7iov0JTIROu467HFQ91b+RcODnDHbbtUxIGt7oxHfv60nqEBuYQy/fTYe/rSckWQ++xA+dKhlUbnFIgtgHNBJY7nNFBYqZiQeXGK6izJIA7ALj75PT/akBsaD74+tFBYtzYJwRt6GvokCNnOMUhzMB8IGDjNdlgy55xkk7GmFFEkAIwxB2II7V8yVI3JPfPWkgSwA5MnckDf50IQTnO3oRRyRYsF3yN6XjAOSdsUknXFLIc/D/OmSITs7REU5csFPXk607iY3Uy/CqFjgBeg+Z700bmQYYbVKaPEftCHlPoMfjmok/YYeJF9mt1BAyN8g7ZrbvC547ThBTdL5DqzN8QwzIcFST774NZBqA5BhcHfv6VO8JcMavcTi9guXs4hCZ0EjEG6jX7wiQ7OQOn09aqe4xpXEfG1vEjpGZ2YfGCFbJI6kDbOe/wAu9MtQ0Ke50w3nFFzLp9nZpHfS6TbIq3j2rHBlTPwsANz6DO1Vi68WtF4FnEuhyHUNQZo7qHUJPjknidcSQTDouPbGwHXNZNxJxlqOreVF9oljs4PMS3jEhzHG7ZMeepX2qyPBDSNN4t8YbLhlJtG4ZhgMULS20s8GTb6rZSKSpuFP/VUt17b4xWQTXlzfmJrmd52RAimQ5KqOgHtuaj4hucetPIvv4FRs2CdKh1ENvankOGG45h6UzXIB3pxDOEYDGM7cx/hTpi2F3b+bHkb8pzy5qf0YD7GwAwQoJH41HKoOM4J6cp/KpXToikUgyDlcfMVFbijHUwrFHAwoByp75NFd30Q8jBXJ23xRUUyKKueWQ5AB36+lcuh5uXr64FdgEgk464xXBbIIGc+3U1BYfOX93bHcYocZQ4wT/CuscwB3z6CvjISowud+pOaVgJEBT94D1PXNJsfj9qUbCDAwQTg0mylh/CpRDPmDy475pew1KfTrkTW8hQjAIB+FxnPKw/eU9weopEDmcDBGO9fCmO4P5UxCNpstbh8StDuL6SRbfXLVPMu7m6lCRy/uxwwxgEsSBsT3OD2FVkxPbsySq0TBsFJAVYMOoIPeqZoGtXvDWs2up6e4S8tX54mKhsN8j861XiS1ttc0mx4mslkjhuWEE7Xt0r3F1cbmSbkH3Vz8Pp0wOpqO6nSLlTRCxxEqHzsaaX8nljA2NODIUt9/2ZO4DDp9Kir64BlG+AdgKGJwNbiFp/2gb4gOuN6QjJUqCd/WnYOVO+R/GkriLy5D0J65FQFENqVqLWXcgK24FM1U8/pnpmrDqdqLy0BA3G4qu782COnrQ2Q7O2wrHDZXOAxGMivp+E55gflXzHMACNs0Hc7bCoshAd9/4VyAFIAGN/rX1STXTL0OenQUxJ8Qc74OD7mulKiTYYWucFT8J3pQIA+H3OOuO+KBReERskhaUKwxypyk8+++42GPelkC4D5AI7CmqYU7D4u2acBTyBsYUnGe2abuoiheMfapcgEgDv8A386lLMmOQYPKRj+NNNLjEcy4xht+udqvGiaJY2mmScQ6sxgsFkkt4Zrd1d47lQrRPIh6xnoB3Odxiqnu9h0he00210TS49b12WOFZYjNpqvyyQySxtvHMBuCQDgfI9jVL4s8UdQ1+ZorHm0zTUuGuraGNiDbsy4dUIPwqTnbtt6VDcacXXnF2s3V5cckXnymVoYByx85GCwXpk9Tj1qESM43qWq5BuhW1Ql/rmu7pSZfavtqQrgHc0rOAFJNMntSK7EIVAbpT2JOY7dKbQJzHOMYp5GeRTgE0vBKFQoIwMD570cpfCj4uudsf2a+JltxsDXYGJGBGCNgQKmL3JHNrcP9oCkfD3yOp27/AI1YoCFhwpGevyNVyAlJATjbrmpe3uCpjBGzHp1xV0ULaYtcxsIVbGd8Df60V8umIQEcx9VA6+9FNRBUM9ceh6UiTlm3+GlAx5h/h+VJnIckdM4rHRadJnGMkdNzXydgUKkhVzufeu3flYgAY+VJFubYAZz370AAC8uOoA2Oelc8pA3OD2ztXQ+HqBttsPWjPbGKkDgKcY3+lfcEjHN33rs9CM81fO/+1AHLtgnAOPnV48L+K4NJ1O407UZ4rXS9Ui+z3N19n8+aOM/eWMdAz/dz8qoxzn27UJI0cgIOGUggjYg+tC32C6NC1/RbrhjUZra7ing5QJIhcKQzRMOZDjJxlSNj0qtW8LXDtI/M3uaujXkHF/BKX8pt4tS09xDcS3E5e61B3IycdAqgZGf8wGdzUElqBzBRheu1Q0x9pDUqApxtXXJ5ltzfvJnanBthkk7ZzX22j8tGOOb1FQMlQ1twrR4bqTkgdqr2qQmO9kXoNiDVlUft9xy53qJ4lhHPHIBjsTUESIZcswz0pTGP7/KkwcsCeprstQVnzJQ4CmjocGvm/NXTe4+tNZJ9VS3TrXYJDAjmB/v/AMVyiczjcH5ClCCScjPTB70WQKr8arkD4VxkDr86WSLm3xuR+VIMoSRlDhlzjmHcVJ8PaHd8QXyWenwTXM5VnZYl5mCIpZ2x6Kqk/Shiss3CfDltqUk2o3kUsmh6dhr77LIqziMgjKqRkgEAtgHAzUHx3xpc8SXfM0scqxRi3SWOLyfORPhR3QHAIUAewAFS3iDxBaJHBoOkzRXOmWHN5V8sRguJI3YsYpwMBiCck79gDgYrOnBkfJ9e1Sm4jrbYTCktnGSacKhxX2NQD60oem/50jdiNWxEfDIrDsadTjmXOM7dqbuNs9MUtEcqR6DvUxdB2ncSgDI3HpSygHf2rmNRykjp1rpDjl+e9SyDtQQQSQOmfSlkAZgzAqcbHpSIkKocb+5pRWxICcFfQfLNQuQY5THmBWIB7EnYVIQIWTGM5PsQPlUc/K+M7qcbA9afwN5a4A6dPWsgSKQ6eQOCGPxHpg4opuWVlPUf6T0HbFFMh6KwObnJHMVOw+dJklCoCkcvrSuyPgAb7711y5zscepFY440Mhbocn0FKRksmCOm1KlVUYGAa+PGCoIwD23oA4OO+PfeuA4yCMha7dskpgqe/vQsRYnmGVx3oC6AMGX122NcEgk4pUQr0H7vcjJNfDGOXGN8dR61NAJc2cV8GCwKrv3zSrRE5xjB3+XrSflhQOUEEfiaKAsfAfFknC+su/nR2sFzE1vPcNCJHjjb7xQdiRsfY1aeJNGfSLxFit5LSwu0E9n9oYFzEScBsdxjoQDgg96zAqWlAI2rVODtTteI+HbjSbx7a2vIP28V3LmW4uZAOWOBO4HYgbbg4Jpho+xFCPAw7Atk/hX0YVsAAA9a+XsctpNLHcRNDLCSkiOMFSDggj1zTQXXOwx0qplt0dXa+XIWHxelNNXiS80qU/dZcMD8qfsRKu426VzJbeZCyAfCQRn0pBHuUdGU9Oh6e9KDGdjQ8XJNIh2KHBrkgBTg4Yb0wh1zcpr5zZdc9D1oCZ/pivvl4xv+VSSjuLLOMenSlcBW+FiSexNcIoyQG3PoOlKKoOwPvv3pkiBSKOSZfJMgEanmAPcn/wAVeLAxcI8DNfAWlzqF9KFt7mC5aO7sJAWAyP3lYZY4B/cyRVb4X0f9eawlq0V1NbEeZcmzi8ySOEH4mA9sjr6ipLxD4ifiDXCouo763tUEEd0tsIGlAHVx3I+7v2G22KaKt0TsluU29keSSRndpHkYszMclj1JPqaRxgexNKyYD79q7jjEkYANKyFQjsOh6V9HMQPwpdbJml5FB9jina6c6IwI+JR+NISRrKeXJBJFdI3K3MdhT9bIuwUrgnpTpOHmMhyende1Mk3wQ9iP80Kh+EfjX1HU7g4B71Kf+lJmyTOip196Xi4VDSDLM7DpUNNEckGZssVGF7Y79K4SXlLc/wAW/Udqs3/pi3L4JLdCd9xTiDhWzEjIwyuNsk70CuLbK1b6gc8x3CkED1pzBfGTkXDM5GMVbLbQdPtZCYrZOYjocn+NScEcEYwsUa5H7qACrlwQVGESicRtHIpYZDBTiirkzFcBfh+YoqSDJzKWQ9QOvbtSokdo99ye+M0i+W25QKViyI05e+4NY10WJ2fJCRIQV29QOtKFWLAKME964kXYlcr7ZzT9IQTjcZ3De29PZIilqSp2+LG3+9KG1wQSeU9/enPljAwACudgB/GvgbPTd/TH8amLBqxsLYoBsBvuO9IyocnBAXG1SA5CQh+7v8R7+1JvEF7g79MYqxu0HyI5hykE9PSuJVHUZxT+WLIJwSB1z0plImG9B2P+1KgEN1bBOMbZp7o2tXmiXsF3ZSiC8tjzwyAZIOMZpm5I7EDqRXPMQ+43/gPWobZBrHEVjbcS6LacR2YEMEri3lNzchrm5m3LzFfTPw/MdO9V5NPWIe49qb+GvEsWj6rJZXE1vZ2V/G1tc3U8QkaGM/f8sHbmYYHbtk1JcTaTNw/qckQWeOCRRNbyXEZR5IW3jYr2yMVU7LNqEPKwRjpTgqqx5zjfJ+VRMM1xKpLHOOwpxHKybNk+gNQKmmVvVIPJvZeUgqzEj1qPZAnf/apvWI8yiYgNzbD51EGMoc74buemf7xTLcGJqeX6UoCcbAH360lzqSBuqnuO1du7Db0/OpQoog3yRhe5FKoSxYqMBcZPpnpSMbGQfFtSkVvJcTxxx5wzAEgEn8BT2SXzhRW4e4Xv9ee2cuf2Vte2d+I5rdsn7yDcgkZ9fh7Z3ozHmOc9d8n+NWjji5t4rLStPtJNNuPJj3urGJkaQY2WXO3MD/HqarLxBokbp2qyF1ZD34GMynC7euafaXAkrgE8oJpB4PMkX/CKkLKAwtjG9K0SkybgtFRgOUDaiWIMdgBvXVrmSLJ2IGenelfKdzuo5e5+tVcEcDZbTldWyOuenSrt4c8LW/F2t3mn3E8lukWm3d5G8IGWkihZ1U57HG9VPyQCvKxAAJ+VWbgriebgnX4NUSziveSCa3a3ldkV0ljKNuu42NZOBw7138epVljOWN9nJZeDfD2z4s4d0SVJmsNQv9cfTZLmV+aFI/swlU+WFBByCCebpjbapTh3wx0jV9VtLey1htV07U9Mv2trp4WtTDdwYGWBJzHkhgdsjqBULPx1quhQaTdWHDEOj6WNQGpWYKztDLKIvJIDMfiBBzsc5pBb7jDQbrTOGpeH57a+e2uorO2ubR0muIrwcrsoOOb7p5T6561t45NDFx7o3XP5fya9R1LWzr/n/RdrDwk0jiCTxI0nTLa7XV9Dhtk0nnmJa5ny3mZXoRKFPIO2VxnNWLjfgHg3w8g1zW/1Udes9K0fS1SxmvZEhmu7iaWGaV3Q83IDC2FBAyRWccN8Z8dLqlxHo1iz6rp9va/apbe1Ml1GLKQyRyOMkFl5eUnByoxjvTnS+LuPrDhuXi4abbalwvbWsegXMt5ZJPZToJTKiTIzfE/PJkMMYyKWWfSy+zGn9PrRHk6mTty229fkrNX0Twu4PgvzDHw5bapZ6hqlm6vqt/NHNpunzaabyXldCOeSMK+Mgk4G1ZFc3/DqeH1gvlcJSyTzpEbm1uLga4sZnY+Y8ZPlKeTGdvukd6XuOK/FOLWtFvJIbiHUde1ODWtLd7ONftE6R+VF5fYII35fL6FT0pi9vx1rHDev8OLo2mwWnD+ZdQQafa213bkO0m0pAkYghtlJ2AHTFWLU6dbqNfciPIz7Jyvj1LNxnouhadpUN1p+jwBpL9gI4DzMyFHPIHZsELsdxnoO25VJ1uy40bw9suJdRSM8N390TDcZiZpLgmTmcp94ElJASeuB7UVm5ddppzcscEl9EJHBqIpLuMJZOYqQ2Q3vTs5+BAMAL8IPYV8g+ALjHXO4zQp+I77jbP8Afzrxpt0dIhAJO4BGKeJN+yKDfI701duTPfP8jRG5Yr2Ge1A9j5mDBGGARgYz1+VDTgguXAH+Xt/e9NW2dVwOVU2H40qVWSFHIx02HTenJFo51dyHYhhjAIokbJZVyB0zXCwgS8oOMMR+GP61xIxLMp7+gpgPrfdYNuPnSMyBQ2AQM+tfBKY1JG3f50rgYMn+IBivbpSp0MMHT72RhsDIPrTa4UpMFO+NqkGUOhk3DA4+dNJfjIb13p72FoTtSA4JOMHscGtZeZOKuCbbU1R5LuyYR31/e3fNLclsAJHH/hjIJJHTnOcmsiiGZgp3BO/4Vc/DW9jtNdNj9linN/8A8NHJPlvs5chC6jI3w35CkbSJju6Q7AATKjGNiPSkcIZN/nilNbtTYatNarIWEMzxlgMc3K5XOO3So6dBI7E7HrkHHSosKpieqDmtyqgfCwbp1qDMEuMFDzN3qdRRNHLnOVxvn1qKv4zbxwnnLCUFgOnLg4oi7Jmhi0T83KQTvscUssDKOgJ6/KuPtErO3xkcy8pxttXMN3KJ+TnLZ7vvVlFaHEZwMk9/u43+dWfgfT2u9cjkKaiIrdTK0umRiSWL0bHpnrUHbsskRZ4kY464w341bOB5oLRNUl8udbqKPmhnt7gxFdtwwAPMDSsZETxFfz65xNfXFzL9pk8zDSNF5ZYjuVGwOc01uYFeNVUDm3JztTfS3aWXDHJclmbuT3p5J/zAfY599qtXFIRNsQazMcSkYyB9acwIpRW79cClLpf2fKNh1pGBcR9cjpj61XIsXJLWhVl5R9cd6cooDYzkD86ZWXxlVPcjHt/eKeA4VG7tg/KqgZ26ksDjbO/uc96+SnkXYgY3ya6mbkPMPQjH0FMpZmkAzgbH8v8AxTpBZdNf8WtY4h8O9I4NvY7d9P0hkeznRSJk5TKeUnoQfN9NuUepp9xv4869xvx3w9xdc2Nja6no0ccUC2rS+W5jZmQsGYkYLHIBwe+1Zv5paUjAGM/lXwnJB337Z96t7UkVyovuheMer8OcZ6nxLbadp73eqKRc284leI5ILMp5+ZWJB3zsGIGBUPaceatZcIXvDEEkP6ovJxcywSQhzzjk5SGO4I5MA9cMwzuarflBc7nc96E/aJ6Y/OlScfskd1ot194ncRagOGvPuYS3DpiOnOIADH5YUJzdm+4PnvQ3ijxS17rl4NXdbnWiRqLRxqq3C8jKFK4wFwxwB0IB7Cqnb/tI1bpmvry/5QABnar/AEoqbJs8a67ccJW3C82ozy6DbMHg0848uNgXIYHqDmR8nvsO1FQoAISQDBIxjNFVuCZapOj/2Q==" width="295" height="413" alt="温永建的证件照">
+</figure>
+</header>
+<div class="resume-body">
+<nav aria-label="简历目录">
+<a href="#profile">个人优势</a>
+<a href="#experience">工作经历</a>
+<a href="#projects">项目经历</a>
+<a href="#backend">后端技能</a>
+<a href="#frontend">前端技能</a>
+<a href="#education">教育经历</a>
+</nav><main id="resume">
+<section id="profile" aria-labelledby="profile-heading">
+<h2 id="profile-heading">个人优势</h2>
+<ul>
+<li>C#/.NET 后端与架构｜13 年研发经验，近 3 年架构师岗位经历。覆盖需求梳理、架构设计、框架搭建、核心开发、上线交付与运维。近期开发 .NET 8 Worker，此前负责智慧工地微服务、SSO 和系统重构。</li>
+<li><strong>技术方向</strong> 以 C#/.NET 为主，有 WPF 地磅称重显示、硬件数据采集和 MRP 备料流程重构经验。具备 Java（Spring Boot）、PowerBuilder（PB）和 Delphi 项目实践。能快速学习并应用新技术，曾接入 Node.js（Playwright）实现脚本录制与回放，开发 Python OCR 识别服务（FastAPI、OpenCV、RapidOCR、ONNX Runtime）。</li>
+<li><strong>架构与交付</strong> 在多个项目中承担核心开发及技术负责人职责，推动存量系统演进、基础组件重构和稳定性治理。曾在 2 核 CPU、16 GB 内存、5 Mbps 带宽环境下，解决系统运行问题并支撑数十个项目及服务稳定运行。</li>
+<li><strong>高并发与性能优化</strong> 有大数据量处理和 SQL、CPU、内存、网络带宽排查经验。熟悉同步/异步、async/await、Thread、Task、ThreadPool、Parallel、线程安全集合和线程锁，具备 Redis 分布式锁及并发冲突处理实践，跟进监控、定位、优化、验证和持续观测。</li>
+<li><strong>数据库与事务</strong> 具备 SQL Server 主从库搭建与维护经验，涉及发布／订阅复制与读写分离，熟悉 Always On 高可用。具备分库分表、数据库事务、并发冲突处理、索引与 SQL 优化实践。使用过 SQL Server、SQL Anywhere、SQLite、MySQL、Oracle、PostgreSQL、OceanBase、Vastbase、MongoDB、Redis、Milvus。</li>
+<li><strong>任务调度与后台作业</strong> 有 Quartz.NET、FluentScheduler、TaskScheduler、Hangfire、AntJob、Gofer.NET、Timer、Windows Service 和 XXL-JOB 的项目使用经验，覆盖定时触发、后台作业和分布式调度场景。</li>
+<li><strong>团队协作与工程质量</strong> 推动团队统一编码规范，参与存量系统重构，沉淀技术文档。承担任务拆解、进度管理和风险识别，推动需求评审、技术评审、代码评审和上线规范落地，协同跨团队处理复杂场景下的交付与运行问题。</li>
+</ul>
+</section>
+<section id="experience" aria-labelledby="experience-heading">
+<h2 id="experience-heading">工作经历</h2>
+<article class="entry"><h3>上海中科软科技有限公司｜软件工程师<span class="date">2025.04—2026.06</span></h3>
+<ul>
+<li><strong>C#/.NET 执行节点</strong> 开发 .NET 8 PlaywrightWorker，接入 Playwright 浏览器操作录制、脚本回放与执行服务。结合 ADB、scrcpy、HTTP 和 WebSocket 实现 Android 屏幕实时投屏、浏览器反控及移动端脚本录制与回放，并提供设备监控和 Appium 服务管理。</li>
+<li><strong>自动化测试平台</strong> 参与 Vue 2.7/Element UI 与 Java 21/Spring Boot 2.7 前后端分离平台研发，管控服务与分布式执行节点协同。扩展 Playwright、iOS、HarmonyOS 和 Midscene（AI）测试能力，参与 JDK 8 至 21 升级及日常迭代。</li>
+<li><strong>测试工具与执行服务</strong> 参与基于 RuoYi 和 XXL-JOB 的 JMeter 脚本平台建设及脚本编写，开发 EasyTools 工具集、Python OCR 识别服务（FastAPI、OpenCV、RapidOCR、ONNX Runtime，支持 PaddleOCR 的 PP-OCRv5 模型）及 Python/Hypium 的 HarmonyOS 指令中转服务。</li>
+<li><strong>AI 用例平台</strong> 参与保险行业需求文档解析、测试点提取及用例生成系统建设。使用 React、FastAPI、LangChain、LangGraph 和 Milvus，支持用例反馈优化、知识检索和 WebSocket 进度推送。</li>
+</ul>
+</article>
+<article class="entry"><h3>杭州凡东科技有限公司｜架构师｜智慧工地<span class="date">2022.03—2025.02</span></h3>
+<ul>
+<li>负责公司产品微服务框架及业务/技术方案，参与核心业务模块开发，覆盖多产品登录授权、单点登录（SSO）、考勤等。</li>
+<li>负责公司核心业务重写的技术方案与业务方案；推动产品框架重构、业务规范与代码规范建设，开展性能优化并重写OSS、Redis、RabbitMQ等基础服务组件；建设分布式任务调度服务。</li>
+<li>参与智能物料验收 WPF 客户端开发，实现地磅称重数据显示。搭建设备接入与硬件数据采集服务，对接不同品牌和类型的硬件，处理 WebSocket、MQTT、TCP/IP、Socket、HTTP 等协议通信。</li>
+<li>推动数据库从单库调整为按产品拆分的独立数据库，并实施单表拆分；建设数据中心服务，汇聚基础数据、将定时流转调整为实时流转，并向第三方平台分发数据。</li>
+<li>定位并处理Redis内存溢出、数据备份、OSS阻塞、RabbitMQ队列及连接数配置不合理，以及异常CPU、内存、带宽占用等问题。</li>
+<li>负责基础平台、智能物料验收、劳务实名制、智慧工地云平台、质量安全管理系统和客户端等服务。在 2 核 CPU、16 GB 内存、5 Mbps 带宽环境下，解决项目运行问题并支撑数十个项目及服务稳定运行。</li>
+<li>平台：<a href="https://mt.findong.com">https://mt.findong.com</a>｜<a href="https://labor.findong.com">https://labor.findong.com</a>｜<a href="http://qs.findong.com">http://qs.findong.com</a>｜<a href="https://base.findong.com">https://base.findong.com</a></li>
+</ul>
+</article>
+<article class="entry"><h3>上海柚凡信息科技有限公司｜软件工程师｜SCM供应链系统<span class="date">2020.11—2022.03</span></h3>
+<ul>
+<li>参与服务300多家服装客户的SaaS供应链系统研发与维护，业务覆盖生产管理、物料采购与管理、外发加工、质检，以及样衣、款式、订单、销售、成品采购、财务、合同、基础配置、供应商、客户、报表及流程引擎等模块。</li>
+<li>负责核心MRP与备料流程重构、异步导出服务、EL日志服务、合同模块、批量导入等功能，处理页面加载数据过多导致卡顿及数据库优化问题，按期完成客户需求并保障线上系统稳定运行。</li>
+<li>参与LinkApi数据交互平台、Matrix项目管理及QIN柚凡内部管理系统的开发和维护。</li>
+</ul>
+</article>
+<article class="entry"><h3>杭州智果科技有限公司｜软件工程师｜净水行业ERP及服务管理平台<span class="date">2019.03—2020.11</span></h3>
+<ul>
+<li>负责Web后台功能与小程序后台接口开发，参与需求沟通、影响评估、开发周期评估、任务拆分与协作；对接京东、天猫、九阳、沁园、碧水源、无限极等外部厂商，并负责第三方银行系统对接。</li>
+<li>搭建并维护数据库主从库与读写分离，定期备份数据库，新增并优化索引；优化第三方Windows Service主动/被动服务，处理死锁与并发问题，推动项目从无法稳定运行到持续稳定运行。</li>
+<li>协调项目组人员及各子公司需求，负责多台服务器部署维护、功能更新与优化，保障项目按期交付。</li>
+</ul>
+</article>
+<article class="entry"><h3>杭州星软科技有限公司｜软件工程师｜ERP及行业平台<span class="date">2015.08—2018.11</span></h3>
+<ul>
+<li>参与多个不同技术框架项目的业务迭代，负责公司项目主页面设计与实现、后台模块开发及客户反馈问题处理。</li>
+<li>使用高德地图实现省、市、区三级钻取与地区分布图，参与代码优化及新技术方案的探讨与应用。</li>
+<li>参与智慧商砼云平台、嘉兴散办平台、江西省散预行业服务与监管平台及ERP系统V6等项目。</li>
+</ul>
+</article>
+<article class="entry"><h3>千格源科技有限公司｜ASP.NET程序员｜网站与业务系统开发<span class="date">2013.07—2015.08</span></h3>
+<ul>
+<li>参与跨境电商实训软件、O2O电商系统、电商创业实训平台、浙江红狮集团招投标平台、ERP及医院系统等项目的模块开发、客户问题处理、代码优化及技术方案实践。</li>
+<li>负责商品详情、聊天、商品列表、主页面、后台项目、轮播图及物流系统等功能开发。</li>
+<li>项目补充职责：ERP员工信息与组织机构导入导出、考勤报表及人员职位调动；医院系统供体与受体信息维护、造访记录展示；参与客户反馈问题处理、代码优化及新技术方案探讨与应用。</li>
+</ul>
+</article>
+</section>
+<section id="projects" aria-labelledby="projects-heading">
+<h2 id="projects-heading">重点项目经历</h2>
+<article class="entry"><h3>智测自动化测试平台｜核心开发｜2025.04—2026.06</h3>
+<p><strong>项目范围</strong> 统一管理接口自动化脚本与场景，以及 UI 控件、脚本、场景、用例、用例集、执行、测试报告、系统和设备。覆盖 PC 端、Android、iOS、HarmonyOS 和 Windows EXE 客户端自动化测试，集成 JMeter 脚本执行与 AI 测试能力。</p>
+<p><strong>平台架构</strong> 前后端分离，管控服务与分布式执行节点协同。管理端使用 Vue 2.7、Element UI，后端使用 Java 21、Spring Boot 2.7，以 Maven 划分 backend 管控模块和可独立部署的 execute 执行模块。使用 MyBatis 访问 PostgreSQL，配套 HikariCP、Liquibase 和 Shiro。</p>
+<p><strong>执行与集成</strong> Java 执行模块集成 Selenium、Appium 和 Hypium，C#/.NET 8 Worker 托管 Playwright（Node.js/Python）服务，支持浏览器操作录制、生成测试脚本、回放及报告查看，并管理节点、设备和 Appium 服务。Python 提供 OCR 识别服务（FastAPI、OpenCV、RapidOCR、ONNX Runtime，支持 PaddleOCR 的 PP-OCRv5 模型）和 HarmonyOS 指令中转，Midscene 支持 AI 自动化操作，JMeter 脚本平台基于 RuoYi 与 XXL-JOB。</p>
+<p>Android 实时投屏、反控及脚本录制与回放｜.NET 8 Worker 通过 ADB 管理设备、启动 scrcpy Server v3.3.4 并转发端口。ScrcpyBridge 按设备维护视频与控制 TCP 连接和 WebSocket 会话，向浏览器转发 H.264 视频并实时显示设备画面，将浏览器发出的触摸、按键指令传回设备。前端 RemoteDebugViewer 优先使用 WebCodecs 解码，失败时回退至 Broadway，支持连接恢复。平台录制点击、文本输入和滑动并生成 Android 测试步骤，支持单步及当前页面脚本回放。</p>
+<p><strong>个人职责</strong> 参与智测平台迭代，扩展 Playwright、iOS、HarmonyOS、Midscene（AI）测试能力及 JDK 8 至 21 升级。参与 RuoYi 和 XXL-JOB 脚本平台建设并编写 JMeter 脚本，开发 PlaywrightWorker、Android 投屏反控及移动端脚本录制回放、OCR、HarmonyOS 指令中转和 EasyTools。</p>
+<p class="project-links"><strong>链接</strong> 智测平台 <a href="http://106.54.164.19:8080">http://106.54.164.19:8080</a>｜EasyTools 项目主页 <a href="https://ijlynivfhp.github.io">https://ijlynivfhp.github.io</a></p>
+</article>
+<article class="entry"><h3>AI 智能测试用例平台｜上海中科软科技有限公司</h3>
+<p><strong>项目范围</strong> 面向保险业务，支持 DOCX、PDF、TXT、XLS 和 XLSX 需求文档解析、测试点识别、用例生成、用户反馈优化与 WebSocket 进度推送。</p>
+<p><strong>技术架构</strong> React 18、TypeScript 前端与 Python/FastAPI 后端分离，使用 SQLAlchemy 访问 PostgreSQL 保存业务数据，Milvus 存储文档向量。LangChain 用于模型调用、Agent、结构化输出和 RAG 知识问答，基于 LangGraph 定义需求分析与用例生成工作流。</p>
+<p><strong>模型与检索</strong> 对话侧支持配置 OpenAI GPT、ModelScope（含 DeepSeek）、Azure 及兼容接口。Embedding 独立配置，通过硅基流动接口调用 BAAI/bge-large-zh-v1.5，结合 Milvus 相似度检索为生成提供上下文。</p>
+<p><strong>个人职责</strong> 参与平台搭建，将需求文档解析、测试点识别和用例生成串联为可操作的业务流程。</p>
+</article>
+<article class="entry"><h3>智慧工地｜架构师<span class="date">2022.03—2025.02</span></h3>
+<p><strong>项目描述</strong> 公司智慧工地产品及基础平台，覆盖智能物料验收、劳务实名制、质量安全管理、智慧工地云平台及桌面客户端。负责产品框架和业务方案，包含多产品SSO、授权、考勤、设备接入、硬件数据采集、数据中心、实时数据汇聚与第三方数据分发。</p>
+<p><strong>技术架构与关键技术</strong> 智能物料验收使用 C#/.NET WPF 客户端展示地磅称重数据。平台采用微服务架构，使用 Redis、OSS、RabbitMQ 基础组件及分布式任务调度，实施按产品分库与单表拆分。使用 WebSocket、MQTT、TCP、HTTP 等协议，接入人脸设备、身份证读卡器、安全帽、塔吊、升降机、水表、电表、地磅仪及视频监控，实现多种硬件的数据采集。</p>
+<p><strong>个人职责与成果</strong> 整合各产品登录为 SSO，重构产品框架与数据库，处理基础组件误用和 CPU、内存、带宽异常占用。负责核心业务方案、硬件接入与数据采集、数据中心建设，将数据流转由定时处理调整为实时处理，并向第三方平台分发数据。在 2 核 CPU、16 GB 内存、5 Mbps 带宽环境下支撑数十个项目及服务稳定运行。</p>
+<p class="project-links"><strong>平台</strong> <a href="https://mt.findong.com">https://mt.findong.com</a>｜<a href="https://labor.findong.com">https://labor.findong.com</a>｜<a href="http://qs.findong.com">http://qs.findong.com</a>｜<a href="https://base.findong.com">https://base.findong.com</a></p>
+</article>
+<article class="entry"><h3>SCM 供应链系统（生产管理与 MRP 备料）｜软件工程师｜项目整体周期 2020.03—2022.03</h3>
+<p><strong>项目描述</strong> 面向 300 多家服装客户的 SaaS 系统，覆盖 MES 相关场景（生产管理、物料采购与管理、外发加工、成品管理、质检），以及样衣、款式、订单、销售、成品采购、财务、合同、基础配置、供应商、客户、报表中心及流程引擎。</p>
+<p><strong>技术架构</strong> 后端Asp.Net MVC、EF、Lambda、LINQ、Cache、WebAPI、SignalR、AutoMapper、Newtonsoft.Json、MsieJavaScriptEngine；Elasticsearch、ExceptionLess、Log4.Net、MiniProfiler、Quartz；Nginx、OSS、Redis、RabbitMQ；SQL Server、SQL Server Profiler、Git。前端HTML、CSS、JavaScript、jQuery、Layer.js、Bootstrap、ECharts、HighCharts、jsPlumb、WebUploader、FancyTree。</p>
+<p><strong>个人职责</strong> 负责核心 MRP（物料需求计划）与备料流程重构，以及财务模块前后端开发、二次开发、日常维护、产品迭代与发布。承担异步导出、EL 日志、合同模块、批量导入、页面卡顿处理和数据库优化，按期交付客户需求并保障线上运行。</p>
+<p class="project-links"><strong>项目链接</strong> <a href="http://qin.cnunify.com">http://qin.cnunify.com</a>｜<a href="http://dev.am.codefr.com">http://dev.am.codefr.com</a></p>
+</article>
+<article class="entry"><h3>LinkApi 数据交互平台｜核心开发｜项目整体周期 2020.03—2022.03</h3>
+<p><strong>项目描述</strong> 面向SCM供应链系统与第三方平台的数据交互，打通聚水潭、金蝶、巨沃等平台。负责业务节点与第三方平台实时交互，保障数据正确性并承担日常维护。</p>
+<p><strong>技术栈</strong> Elasticsearch、ExceptionLess、.NET 5、EF Core、Lambda、LINQ、WebAPI、Swagger、CORS、JWT、Quartz、Serilog、OSS、Redis、RabbitMQ、Nginx。</p>
+<p><strong>个人职责</strong> 负责LinkApi项目搭建及第三方平台数据对接开发。</p>
+</article>
+<article class="entry"><h3>Matrix 项目管理｜开发与维护｜项目整体周期 2020.02—2021.09</h3>
+<p><strong>项目描述</strong> 服务于SCM供应链与第三方平台对接，包含聚水潭、金蝶、巨沃等平台的对接，涉及账号密码管理、数据中转及数据保护。</p>
+<p><strong>技术架构</strong> 后端Asp.Net MVC、EF、Lambda、LINQ、Cache、WebAPI、SignalR、Elasticsearch、ExceptionLess、Log4.Net、MiniProfiler、Quartz、Nginx、OSS、Redis、RabbitMQ、AutoMapper、Newtonsoft.Json、MsieJavaScriptEngine、SQL Server、SQL Server Profiler、Git；前端HTML、CSS、JavaScript、jQuery、Layer.js、Bootstrap、ECharts、HighCharts、jsPlumb、WebUploader、FancyTree。</p>
+<p><strong>个人职责</strong> 负责第三方平台维护及相关表结构维护。</p>
+</article>
+<article class="entry"><h3>QIN柚凡内部管理系统｜独立开发<span class="date">2020.11—2021.01</span></h3>
+<p><strong>项目描述</strong> 独立开发公司内部管理系统，包含官网、人才招聘、知识、产品、费用、配置六个模块，支持人员、SCM 客户部署记录、订单、服务器及数据库配置信息、知识库、系统升级公告及官网文章管理。</p>
+<p><strong>技术架构</strong> 后端Asp.Net MVC、EF、Lambda、LINQ、Cache、Log4.Net、AutoMapper、Newtonsoft.Json；前端HTML、CSS、JavaScript、jQuery、Layer.js、Bootstrap、ECharts、UEditor、FancyTree；版本管理SVN。</p>
+<p><strong>个人职责</strong> 负责SCM客户部署记录、服务器及数据库信息管理、费用中心图表展示等功能。</p>
+</article>
+<article class="entry"><h3>比户服务管理平台（净水行业核心系统）｜软件工程师<span class="date">2019.03—2020.11</span></h3>
+<p><strong>技术架构</strong> ASP.NET MVC、WebAPI、EasyUI.js、Layer.js、Knockout.js、MSMQ、Windows Service、Nginx、Quartz。</p>
+<p><strong>项目描述</strong> 净水行业服务管理平台，包含厂家系统对接、接单、响应、派单、预约、打卡、上门、完工、回单、审核、回访、保养、配件、仓库、进销存、套餐、活动、报表、支付等业务，并提供后台服务系统、小程序和公众号。</p>
+<p><strong>个人职责</strong> 负责Web后台与小程序接口开发、需求沟通及优化方案制定，评估现有业务影响和开发周期并协调任务；对接京东、天猫、九阳、沁园、碧水源、无限极及第三方银行系统；负责多台服务器部署维护、功能迭代、数据库主从库/读写分离、定期备份、索引优化及死锁并发问题处理，保障项目稳定运行。</p>
+</article>
+<article class="entry"><h3>愉悦微服商城系统｜开发与维护<span class="date">2019.03—2020.04</span></h3>
+<p><strong>项目描述</strong> 为成都愉悦微服公司建设可商用并对外销售的线上商城配套系统，已由多家公司购买；对接微信公众号，支持服务人员与用户下单、制单、派单、服务、完工和评价。后台采用自主设计的三层架构及ADO.NET，前端采用Layui与jQuery，通过WebAPI实现多平台接口交互，数据库为SQL Server。</p>
+<p><strong>技术栈</strong> ASP.NET MVC、WebAPI、.NET Core、Swagger、JWT、ADO.NET、Layui、jQuery、SQL Server。个人职责：参与项目任务分配与开发。</p>
+</article>
+<article class="entry"><h3>ERP 系统升级 V6｜软件工程师｜项目整体周期 2018.07—2019.11</h3>
+<p><strong>技术架构</strong> ASP.NET MVC、Microsoft Enterprise Library、公司封装ORM、三层架构；WebService、高德地图、百度地图、ECharts、HighCharts、Windows Service、友盟推送、MongoDB、EasyUI、Bootstrap、Dapper。原项目实践中使用轻量级Dapper提升数据操作效率。</p>
+<p><strong>项目模块</strong> 负责过磅、生产、实验配比、物料管理及报表、工程管理、系统设置、销售等模块开发与维护。</p>
+</article>
+<article class="entry"><h3>嘉兴散办平台｜软件工程师<span class="date">2016.05—2018.08</span></h3>
+<p><strong>项目描述</strong> 包含首页、智能监控、用户管理、企业管理、运营商管理、工程管理、生产管理、砂浆用量及统计分析等模块。</p>
+<p><strong>技术架构</strong> ASP.NET MVC、EF、三层架构。个人职责：负责各功能模块开发与表结构设计。</p>
+</article>
+<article class="entry"><h3>星软项目｜江西省散预行业服务与监管平台｜开发</h3>
+<p><strong>项目描述</strong> 企业备案子系统（基础信息、企业备案）及培训管理子系统（基础信息、人员培训）。技术架构：ASP.NET MVC、EF、三层架构。</p>
+</article>
+<article class="entry"><h3>智慧商砼云平台｜软件工程师<span class="date">2015.08—2016.05</span></h3>
+<p><strong>项目描述</strong> 包含首页、智能监控、砂浆罐、工程管理、报表统计、砂浆用料及数据流向七大模块。</p>
+<p><strong>技术架构</strong> ASP.NET MVC、Dapper、三层架构、WebService、高德地图、百度地图、ECharts、HighCharts、Windows Service、友盟推送、MongoDB。原项目使用Dapper进行数据访问与增删改操作。</p>
+<p><strong>个人职责</strong> 负责功能模块开发、表结构设计、代码重构及原项目升级更新；实现高德地图地区分布图调整。</p>
+</article>
+<article class="entry"><h3>电子商务实训软件O2O｜开发<span class="date">2015.05—2015.08</span></h3>
+<p><strong>项目描述</strong> O2O电商软件，前台包括商品分类、首页、超级促销、品牌街、进口食品、生鲜区、大家店、美容馆；后台包括首页、教务管理、商品库管理、供应商库管理。</p>
+<p><strong>个人职责</strong> 前台负责客户注册登录、商品浏览与详情、购物车、下单支付、客户信息修改及在线咨询聊天；后台负责商品类目/规格/属性/商标/商品管理、商城信息与人员管理、客服人员与常见问题/聊天、设备管理、维修及丢失申请。</p>
+</article>
+<article class="entry"><h3>千格源学习APP｜开发<span class="date">2015.02—2015.06</span></h3>
+<p><strong>项目描述</strong> 公司软件浏览平台，支持手机端浏览、电商操作教程、授课讲师及学生人数信息、视频播放和 PDF 文档查看。初期使用 jQuery Mobile，后续改用 Amaze UI 控件。</p>
+<p><strong>个人职责</strong> 开发个人中心、收藏、头像及资料修改、密码修改、资源列表、视频播放、PDF播放和课程分类等功能。</p>
+</article>
+<article class="entry"><h3>电商创业实训平台（升级）｜开发<span class="date">2014.10—2015.02</span></h3>
+<p><strong>项目描述</strong> 前台包含商品分类、首页、超级促销、品牌街、服装城、运动馆、数码街、母婴室；后台包含管理员、物流服务、产品、商标、会员、交易、营销、新闻、商品推荐、电商平台规则及参数配置等管理模块。采用BLL、IBLL接口、DAO、Model分层。</p>
+<p><strong>个人职责</strong> 负责网页切图和后台代码，开发商品购买、图片放大播放、下单、收藏、购物车、关联商品展示、数据绑定、短信验证及账号登录等功能。</p>
+</article>
+<article class="entry"><h3>跨境电商实训软件｜开发<span class="date">2014.08—2014.11</span></h3>
+<p><strong>技术架构</strong> DAL、BLL、UI三层架构；PowerDesigner、动软代码生成器、SQL Server 2008 R2；Windows Service、Quartz、Layer.js、Uploadify、ECharts、jQuery、My97DatePicker、Sea.js、zTree、AJAX。</p>
+<p><strong>项目描述</strong> 前台提供店铺、首页、产品管理（产品信息、运费、海外仓运费、服务、尺码、产品诊断）、交易（订单、退款与纠纷、批量导出、线上/线下物流单、运费统计、投诉、海外仓、资金记录导出、交易评价）、消息中心、账号及认证、营销活动、数据纵横和经营表现。后台提供管理员、用户/商标/资质、会员、企业认证、产品、订单、投诉、黑名单、新闻、平台活动及审核、通知、商品推荐、系统任务、营销/橱窗/模板/联盟及商品订单统计、违规处罚、店铺流量统计、平台规则与参数配置。物流管理包含货物出库、入境报检，海关管理包含账号注册登录、资料修改、报关、报检和退税单管理。</p>
+<p><strong>个人职责</strong> 负责各模块功能开发、数据表建立、代码优化及解决方案和新技术的探讨与实施。</p>
+</article>
+<article class="entry"><h3>EIP系统｜开发<span class="date">2014.05—2014.08</span></h3>
+<p><strong>项目描述</strong> 公司内部系统，包含OA办公、人力资源、客户关系、档案管理、软件项目、科研项目、采购管理、分销连锁、网站后台、开发演示及系统管理11大模块；采用DAL、BLL、UI三层架构。</p>
+<p><strong>个人职责</strong> 开发月计划报表、人员及部门导入导出、工作日志、密码修改、权限分配、分组管理、日程安排、审批流程、邮件发送、采购申请、公司新闻公告、个人考勤、工作计划/报告/日志、通讯录及考勤记录Excel导出，并进行Bug修复及服务器配置文档维护。技术涉及VSS、JavaScript、jQuery、EasyUI、ASP.NET、JSON、AJAX、IIS。</p>
+</article>
+<article class="entry"><h3>电商供应链管理系统｜开发<span class="date">2014.03—2014.06</span></h3>
+<p><strong>项目描述</strong> 面向淘宝店商品生产和销售统计管理，目标为提升生产效率与产能；负责生产部门、生产厂家和公司业绩报表，以及前台页面优化与效果实现。</p>
+<p><strong>技术架构</strong> 后端Java基础、Spring MVC、MyBatis、Maven；前端HTML5、JavaScript、jQuery、Layer、FreeMarker；使用SVN进行项目管理。个人职责：负责模块开发与客户反馈问题处理。</p>
+</article>
+<article class="entry"><h3>浙江省妇联 OA｜开发<span class="date">2013.09—2014.03</span></h3>
+<p><strong>技术架构</strong> 采用 DAL、BLL、UI 三层架构，参与 OA 系统开发。</p>
+</article>
+<article class="entry"><h3>医院眼科系统｜开发</h3>
+<p><strong>项目描述</strong> 支持眼角膜捐赠、供体与受体记录管理及随访管理。负责相关模块开发与客户反馈处理。</p>
+</article>
+<article class="entry"><h3>浙江红狮集团招投标平台｜开发<span class="date">2013.07—2013.12</span></h3>
+<p><strong>项目描述</strong> 后台包含供应商管理、招标管理、信息发布、内容管理、统计分析、基础资料及系统设置；前台包含首页、采购政策、招标公告、入围公告、中标公告、曝光台、联系我们及在线求购。</p>
+<p><strong>技术架构</strong> JSP、Servlet、JavaBean、BeanUtils、FileUpload、JavaMail、DBUtils/JDBC、MySQL、MyEclipse 10、Tomcat 7、JDK 6、Windows、JavaScript、MD5、Spring MVC、JSON、AJAX及SSM（Spring、Spring MVC、MyBatis）。</p>
+<p><strong>个人职责</strong> 参与后台项目立项与单位发布、前台报价及后台中标单位选择等业务流程开发；按需出差部署项目并处理客户反馈问题。</p>
+</article>
+</section>
+<section id="backend" aria-labelledby="backend-heading">
+<h2 id="backend-heading">专业技能（后端）</h2>
+<article class="entry"><h3>一、框架体系</h3>
+<ul>
+<li><strong>.NET 生态</strong> C#、.NET 8 Worker、ASP.NET Core、ASP.NET MVC、ASP.NET Web API、.NET Core 微服务框架、ABP/ABP.Next、OWIN 自托管、TopSelf 自托管（可调试）、Windows Service、WPF。</li>
+<li><strong>Java生态</strong> Spring MVC、Spring Boot、Spring Cloud微服务框架。</li>
+</ul>
+</article>
+<article class="entry"><h3>二、微服务与高可用架构</h3>
+<ul>
+<li><strong>微服务组件</strong> Ocelot 网关路由及请求聚合、Consul 服务发现、Polly 限流与熔断。关注微服务高可用和高并发设计，使用 SkyWalking、OneAPM 进行分布式监控和跟踪，使用 Swagger 管理 API 文档。</li>
+</ul>
+</article>
+<article class="entry"><h3>三、认证授权与安全</h3>
+<ul>
+<li>JWT、IdentityServer4、Cookie、Session、Token；认证授权及访问控制。</li>
+</ul>
+</article>
+<article class="entry"><h3>四、数据库与数据存储</h3>
+<ul>
+<li><strong>关系型数据库</strong> SQL Server、SQL Anywhere、SQLite、MySQL、Oracle、PostgreSQL、OceanBase、Vastbase；NoSQL：MongoDB、Redis；向量数据库：Milvus。</li>
+<li><strong>SQL与数据库对象</strong> 表、存储过程、视图、触发器、函数；SQL Server 主从库、复制（发布／订阅）、读写分离、Always On 故障转移集群、SQL Server负载均衡集群Moebius for SQL Server、阿里MyBase SQL Server。</li>
+<li><strong>数据库设计与性能</strong> 分库分表、索引与 SQL 优化、主从库与读写分离。本地事务、事务隔离级别、分布式事务基础，以及乐观锁、悲观锁、死锁排查、并发冲突与一致性处理。</li>
+<li><strong>数据库工具</strong> SQL Server Profiler、SQL Server活动监视器、RedGate（SQL Server插件）、DBCHM、SQLDoc、DataDo、PD（数据库文档查看工具）。</li>
+</ul>
+</article>
+<article class="entry"><h3>五、缓存、消息队列与分布式锁</h3>
+<ul>
+<li>Redis缓存、分布式锁、Session共享；缓存穿透/击穿/雪崩解决方案，哨兵模式及集群搭建。</li>
+<li><strong>消息队列</strong> MSMQ、RabbitMQ、ActiveMQ、ZeroMQ、Kafka/Jafka。</li>
+</ul>
+</article>
+<article class="entry"><h3>六、ORM与数据操作</h3>
+<ul>
+<li>Dapper、EF（Entity Framework）、EF Core、ADO.NET、Microsoft Enterprise Library、SqlSugar、PetaPoco、LINQ to SQL 及自定义数据操作类。使用 LINQ、Lambda、Expression 表达式树。</li>
+</ul>
+</article>
+<article class="entry"><h3>七、定时任务与调度</h3>
+<ul>
+<li>Quartz.NET（定时任务管理中心）、FluentScheduler、TaskScheduler、Hangfire分布式任务调度平台、蚂蚁调度AntJob、Gofer.NET、Timer、Windows Service、XXL-JOB分布式任务调度平台。</li>
+</ul>
+</article>
+<article class="entry"><h3>八、日志与监控分析</h3>
+<ul>
+<li>log4net、NLog、Serilog、ELK（Elasticsearch、Logstash、Kibana）、Elasticsearch + Exceptionless、Log4j 等日志及异常分析框架。</li>
+<li><strong>抓包调试</strong> Fiddler、Fiddler Everywhere（HTTP/HTTPS请求拦截与调试）、Wireshark、Reqable、Charles。</li>
+</ul>
+</article>
+<article class="entry"><h3>九、通信协议与远程调用</h3>
+<ul>
+<li>HTTP/HTTPS、TCP/UDP、Socket、RSocket、WebSocket、MQTT；WebService、WCF、RESTful WebAPI、DotNetty RPC、gRPC、SignalR；硬件设备交互协议包括MQTT、WebSocket、TCP、HTTP。</li>
+</ul>
+</article>
+<article class="entry"><h3>十、异步、多线程与并发编程</h3>
+<ul>
+<li>同步/异步编程、async/await、Thread、Task、ThreadPool、.NET Framework 委托异步调用（BeginInvoke）、Parallel 及多线程/并行处理。</li>
+<li><strong>线程安全与并发</strong> System.Collections.Concurrent 线程安全集合，如 ConcurrentDictionary、ConcurrentQueue，线程取消、暂停与延迟，多线程异常捕获，高并发处理。</li>
+<li><strong>线程同步与锁</strong> lock、Monitor、Mutex、Semaphore、SemaphoreSlim、ReaderWriterLockSlim。并发冲突处理使用场景涵盖乐观锁、悲观锁及 Redis 分布式锁。</li>
+</ul>
+</article>
+<article class="entry"><h3>十一、架构、设计模式与报表文件处理</h3>
+<ul>
+<li>MVC、MVM、MVVM、单例、工厂、IOC（Autofac）、AOP（特性、过滤器）、DDD领域驱动设计、CQRS（命令查询职责分离）。</li>
+<li><strong>报表工具</strong> FastReport、Stimulsoft、ActiveReport、DevExpress控件。</li>
+<li><strong>文件处理与导出</strong> Aspose、Spire Office、NPOI、EPPlus、MiniExcel、MagicodesIE、WordToPdf、Microsoft.Office.Interop。</li>
+</ul>
+</article>
+<article class="entry"><h3>十二、部署与DevOps</h3>
+<ul>
+<li>Docker、Kubernetes、DockerUI、Shipyard、Rancher、Portainer、Tomcat、Jetty。使用 .NET Core、Jenkins、GitHub 实现自动部署到 Docker，使用阿里云 SLB 做负载均衡、Nginx 做反向代理。</li>
+</ul>
+</article>
+<article class="entry"><h3>十三、开发与辅助工具</h3>
+<ul>
+<li><strong>IDE</strong> Visual Studio（含 2015）、VS Code、Eclipse、MyEclipse、IntelliJ IDEA全家桶、Android Studio；代码管理：SVN、VSS、Git。</li>
+<li><strong>数据库设计</strong> PowerDesigner、PDMan、Chiner、动软代码生成器；接口调试：APIPost、SoapUI、JMeter、Postman、Apifox；映射工具：AutoMapper。</li>
+</ul>
+</article>
+<article class="entry"><h3>十四、系统运维与命令工具</h3>
+<ul>
+<li>Windows命令、Linux命令；FTP工具FileZilla、WinSCP、MobaXterm及FTP搭建与文件传输。</li>
+</ul>
+</article>
+<article class="entry"><h3>十五、逆向工程与调试</h3>
+<ul>
+<li>DnSpy、ILSpy、Reflector、Reflexil、DotPeek、JustDecompile（DLL查看、修改、反编译及调试）。</li>
+</ul>
+</article>
+<article class="entry"><h3>十六、加密与序列化</h3>
+<ul>
+<li><strong>摘要、编码与加密</strong> MD5、Base64、AES、RSA。序列化：Fastjson、Json.NET（Newtonsoft.Json）、Expression 表达式树序列化与反序列化、表达式缓存及集合深度复制。</li>
+</ul>
+</article>
+<article class="entry"><h3>十七、第三方集成</h3>
+<ul>
+<li>友盟推送、极光推送、微信公众号推送、微信消息推送模板；微信支付、小程序接口。</li>
+</ul>
+</article>
+</section>
+<section id="frontend" aria-labelledby="frontend-heading">
+<h2 id="frontend-heading">专业技能（前端）</h2>
+<p>熟练掌握HTML、jQuery、JavaScript、CSS；了解HTML5、EasyUI、Layer、Knockout、Amaze UI、Bootstrap、Vue、Angular、Sea.js、DatePicker、jQuery DataTable.js及Node等框架。</p>
+<p>熟练使用ECharts、HighCharts等报表组件，Uploadify上传控件、轮播图及jsPlumb流程设计器等第三方控件。</p>
+</section>
+<section id="education" aria-labelledby="education-heading">
+<h2 id="education-heading">教育经历</h2>
+<p><strong>2022.02—2025.01｜山西通用航空职业技术学院｜工业软件开发技术｜大专（全日制，在职期间就读）</strong></p>
+<p><strong>2010.02—2013.01｜河南机电职业技术学院｜电机与电器｜大专</strong></p>
+<p><strong>英语｜读写及听说能力良好。兴趣爱好｜乒乓球、户外运动。</strong></p>
+<p><strong>个人资料</strong> 男，1989 年 11 月出生，大专，河南商丘户籍，共青团员，无海外工作或学习经历。</p>
+<p><strong>Codeup：</strong><a href="https://codeup.aliyun.com">https://codeup.aliyun.com</a>（及其他技术社区）</p>
+<p>长期关注Linuxdo、GitHub、Gitee、CSDN、Stack Overflow、MDN及微信技术订阅号等技术社区，持续学习并将新知识用于项目优化与团队建设。</p>
+</section></main>
+</div>
+</div>
+</body>
+</html>
